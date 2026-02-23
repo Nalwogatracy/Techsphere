@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category Management | TechSphere</title>
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #00b09b, #96c93d);
+            --warning-gradient: linear-gradient(135deg, #f9d423, #f83600);
+            --dark-bg: #0f172a;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(118, 75, 162, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(0, 243, 255, 0.05) 0%, transparent 50%);
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Floating Particles */
+        .floating-particles {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+            opacity: 0.1;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg) scale(1); }
+            100% { transform: translateY(-100vh) rotate(360deg) scale(0.5); }
+        }
+
+        /* Main Container */
+        .dashboard-container {
+            max-width: 1200px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: var(--transition);
+            animation: slideIn 0.5s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 40px -15px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Card Header */
+        .card-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .card-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-header h2 i {
+            font-size: 2rem;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+        }
+
+        .card-header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            letter-spacing: 0.3px;
+        }
+
+        .form-label i {
+            color: #667eea;
+            margin-right: 6px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            z-index: 1;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 14px 20px 14px 48px;
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: white;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-textarea {
+            padding: 14px 20px;
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-input::placeholder, .form-textarea::placeholder {
+            color: #a0aec0;
+            font-weight: 300;
+        }
+
+        /* Character Count */
+        .char-count {
+            text-align: right;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        .char-count i {
+            margin-right: 4px;
+            color: #667eea;
+        }
+
+        /* Slug Preview */
+        .slug-preview {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 25px;
+            border: 1px dashed var(--border-color);
+        }
+
+        .slug-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .slug-value {
+            font-family: 'Monaco', 'Menlo', monospace;
+            color: #667eea;
+            font-size: 0.95rem;
+            word-break: break-all;
+        }
+
+        /* Form Row (for two columns) */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* Button */
+        .btn {
+            width: 100%;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 10px 20px -5px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px -5px rgba(102, 126, 234, 0.7);
+        }
+
+        .btn-primary i {
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover i {
+            transform: rotate(90deg);
+        }
+
+        /* Category List */
+        .category-list {
+            list-style: none;
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .category-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .category-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .category-list::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+        }
+
+        .category-item {
+            background: #f8fafc;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .category-item:hover {
+            transform: translateX(5px);
+            background: white;
+            border-color: #667eea;
+            box-shadow: var(--shadow-sm);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .category-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .category-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+
+        .category-details {
+            flex: 1;
+        }
+
+        .category-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .category-slug {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-family: 'Monaco', 'Menlo', monospace;
+            background: #e2e8f0;
+            padding: 2px 8px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .category-description {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .category-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.85rem;
+            margin-top: 6px;
+        }
+
+        .category-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--text-secondary);
+        }
+
+        .category-meta i {
+            color: #667eea;
+        }
+
+        .category-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .action-btn.edit {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .action-btn.edit:hover {
+            background: #667eea;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .action-btn.delete {
+            background: rgba(245, 87, 108, 0.1);
+            color: #f5576c;
+        }
+
+        .action-btn.delete:hover {
+            background: #f5576c;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            background: #f8fafc;
+            border-radius: 16px;
+            border: 2px dashed var(--border-color);
+        }
+
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2rem;
+            color: #667eea;
+        }
+
+        .empty-state h4 {
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Stats Badge */
+        .stats-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Success/Error Messages */
+        .message {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideDown 0.5s ease;
+        }
+
+        .message.success {
+            background: linear-gradient(135deg, #00b09b, #96c93d);
+            color: white;
+        }
+
+        .message.error {
+            background: linear-gradient(135deg, #f5576c, #f093fb);
+            color: white;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Tooltip */
+        [data-tooltip] {
+            position: relative;
+            cursor: help;
+        }
+
+        [data-tooltip]:before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 6px 12px;
+            background: var(--text-primary);
+            color: white;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            margin-bottom: 8px;
+            z-index: 10;
+        }
+
+        [data-tooltip]:hover:before {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Animation for new items */
+        @keyframes highlight {
+            0% { background: rgba(102, 126, 234, 0.2); }
+            100% { background: transparent; }
+        }
+
+        .category-item.new {
+            animation: highlight 2s ease;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            color: var(--text-primary);
+            font-size: 1.3rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: #f1f1f1;
+            color: #f5576c;
+            transform: rotate(90deg);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .card-header h2 {
+                font-size: 1.5rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .category-meta {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    
+    <!-- Floating Particles -->
+    <div class="floating-particles" id="particles"></div>
+
+    <div class="dashboard-container">
+        <!-- Add Category Card -->
+        <div class="card">
+            <div class="card-header">
+                <h2>
+                    <i class="fas fa-layer-plus"></i>
+                    Add New Category
+                </h2>
+                <p>Create a new category to organize your products</p>
+            </div>
+            
+            <div class="card-body">
+                <!-- Success Message -->
+                <div class="message success" th:if="${success}" th:text="${success}">
+                    Category added successfully!
+                </div>
+                
+                <!-- Error Message -->
+                <div class="message error" th:if="${error}" th:text="${error}">
+                    Error adding category
+                </div>
+                
+                <form th:action="@{/admin/categories}" th:object="${category}" method="post" id="categoryForm">
+                    <!-- Category Name -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-tag"></i>
+                            Category Name *
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-folder-open input-icon"></i>
+                            <input type="text" 
+                                   class="form-input" 
+                                   th:field="*{name}" 
+                                   placeholder="e.g. Smart Devices, Wearables, AI & Robotics"
+                                   maxlength="50"
+                                   id="categoryName"
+                                   autocomplete="off"
+                                   required />
+                        </div>
+                        <div class="char-count">
+                            <i class="fas fa-text-height"></i>
+                            <span id="charCount">0</span>/50 characters
+                        </div>
+                    </div>
+                    
+                    <!-- Slug (Auto-generated) -->
+                    <div class="slug-preview" id="slugPreview">
+                        <div class="slug-label">
+                            <i class="fas fa-link"></i>
+                            URL Slug (auto-generated, must be unique)
+                        </div>
+                        <div class="slug-value" id="slugValue">
+                            /category/enter-name
+                        </div>
+                    </div>
+                    
+                    <!-- Description -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-align-left"></i>
+                            Description
+                        </label>
+                        <textarea class="form-textarea" 
+                                  th:field="*{description}" 
+                                  placeholder="Describe this category (optional)"
+                                  rows="3"></textarea>
+                        <div class="char-count">
+                            <i class="fas fa-text-height"></i>
+                            <span th:text="${category.description != null ? #strings.length(category.description) : 0}">0</span>/200 characters
+                        </div>
+                    </div>
+                    
+                    <!-- Icon Selection -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-icons"></i>
+                            Category Icon
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-star input-icon"></i>
+                            <select class="form-input" th:field="*{iconClass}" style="padding-left: 48px;">
+                                <option value="">Select an icon (optional)</option>
+                                <option value="fas fa-mobile-alt">📱 Smart Devices</option>
+                                <option value="fas fa-smartwatch">⌚ Wearables</option>
+                                <option value="fas fa-robot">🤖 AI & Robotics</option>
+                                <option value="fas fa-vr-cardboard">🥽 VR/AR</option>
+                                <option value="fas fa-home">🏠 Smart Home</option>
+                                <option value="fas fa-drone">🚁 Drones</option>
+                                <option value="fas fa-microchip">💾 Electronics</option>
+                                <option value="fas fa-laptop">💻 Computers</option>
+                                <option value="fas fa-headphones">🎧 Audio</option>
+                                <option value="fas fa-camera">📷 Photography</option>
+                                <option value="fas fa-gamepad">🎮 Gaming</option>
+                                <option value="fas fa-car">🚗 Automotive</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <i class="fas fa-plus-circle"></i>
+                        Create Category
+                        <span class="loading-spinner" style="display: none;" id="spinner"></span>
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Existing Categories Card -->
+        <div class="card">
+            <div class="card-header">
+                <h2>
+                    <i class="fas fa-layer-group"></i>
+                    Existing Categories
+                </h2>
+                <p>Manage your product categories</p>
+                <div class="stats-badge" style="margin-top: 10px;">
+                    <i class="fas fa-cubes"></i>
+                    <span th:text="${#lists.size(categories)}">0</span> Total Categories
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <div th:if="${#lists.isEmpty(categories)}" class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-folder-open"></i>
+                    </div>
+                    <h4>No Categories Yet</h4>
+                    <p>Create your first category to organize your products</p>
+                </div>
+                
+                <ul class="category-list" th:unless="${#lists.isEmpty(categories)}">
+                    <li th:each="cat, iterStat : ${categories}" 
+                        class="category-item" 
+                        th:classappend="${iterStat.first} ? 'new' : ''"
+                        th:attr="data-category-id=${cat.id}">
+                        
+                        <div class="category-info">
+                            <div class="category-icon">
+                                <i th:class="${cat.iconClass != null} ? ${cat.iconClass} : 'fas fa-folder'"></i>
+                            </div>
+                            <div class="category-details">
+                                <div class="category-name">
+                                    <span th:text="${cat.name}">Smart Devices</span>
+                                    <span class="category-slug" th:text="'/' + ${cat.slug}">/smart-devices</span>
+                                </div>
+                                
+                                <!-- Description (if exists) -->
+                                <div class="category-description" th:if="${cat.description}" th:text="${cat.description}">
+                                    Category description goes here
+                                </div>
+                                
+                                <div class="category-meta">
+                                    <span>
+                                        <i class="fas fa-box"></i>
+                                        <span th:text="${cat.productCount}">12</span> products
+                                    </span>
+                                    <span th:if="${cat.iconClass}">
+                                        <i th:class="${cat.iconClass}"></i>
+                                        <span>Has icon</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="category-actions">
+                            <button class="action-btn edit" 
+                                    th:attr="data-tooltip='Edit Category', 
+                                             onclick='editCategory(' + ${cat.id} + ')'">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn delete" 
+                                    th:attr="data-tooltip='Delete Category',
+                                             onclick='deleteCategory(' + ${cat.id} + ', \'' + ${cat.name} + '\')'">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Category Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> Edit Category</h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form th:action="@{/admin/categories/edit}" method="post" id="editForm">
+                <input type="hidden" name="id" id="editId" />
+                
+                <div class="form-group">
+                    <label class="form-label">Category Name</label>
+                    <input type="text" name="name" id="editName" class="form-input" required 
+                           placeholder="Category name" />
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" id="editDescription" class="form-textarea" 
+                              rows="3" placeholder="Category description"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Icon</label>
+                    <select name="iconClass" id="editIcon" class="form-input">
+                        <option value="">No icon</option>
+                        <option value="fas fa-mobile-alt">📱 Smart Devices</option>
+                        <option value="fas fa-smartwatch">⌚ Wearables</option>
+                        <option value="fas fa-robot">🤖 AI & Robotics</option>
+                        <option value="fas fa-vr-cardboard">🥽 VR/AR</option>
+                        <option value="fas fa-home">🏠 Smart Home</option>
+                        <option value="fas fa-drone">🚁 Drones</option>
+                        <option value="fas fa-microchip">💾 Electronics</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Update Category</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Initialize particles
+        function initParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.cssText = `
+                    left: ${Math.random() * 100}%;
+                    width: ${Math.random() * 6 + 2}px;
+                    height: ${Math.random() * 6 + 2}px;
+                    background: ${i % 2 === 0 ? '#667eea' : '#764ba2'};
+                    animation-duration: ${Math.random() * 20 + 10}s;
+                    animation-delay: ${Math.random() * 5}s;
+                `;
+                container.appendChild(particle);
+            }
+        }
+
+        // Character counter and slug generator
+        const nameInput = document.getElementById('categoryName');
+        const charCount = document.getElementById('charCount');
+        const slugPreview = document.getElementById('slugValue');
+        
+        if (nameInput) {
+            nameInput.addEventListener('input', function() {
+                const count = this.value.length;
+                charCount.textContent = count;
+                
+                // Generate slug preview
+                const slug = this.value.toLowerCase()
+                    .trim()
+                    .replace(/[^a-z0-9\s-]/g, '')
+                    .replace(/\s+/g, '-')
+                    .replace(/-+/g, '-')
+                    .replace(/^-|-$/g, '');
+                
+                if (slug) {
+                    slugPreview.textContent = '/category/' + slug;
+                } else {
+                    slugPreview.textContent = '/category/enter-name';
+                }
+            });
+        }
+
+        // Form submission with loading
+        const form = document.getElementById('categoryForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const spinner = document.getElementById('spinner');
+        
+        if (form) {
+            form.addEventListener('submit', function() {
+                submitBtn.disabled = true;
+                spinner.style.display = 'inline-block';
+                submitBtn.querySelector('i').style.display = 'none';
+            });
+        }
+
+        // Edit category
+        function editCategory(id) {
+            // Fetch category details via AJAX
+            fetch('/admin/categories/' + id)
+                .then(response => response.json())
+                .then(category => {
+                    document.getElementById('editId').value = category.id;
+                    document.getElementById('editName').value = category.name;
+                    document.getElementById('editDescription').value = category.description || '';
+                    document.getElementById('editIcon').value = category.iconClass || '';
+                    document.getElementById('editModal').classList.add('active');
+                })
+                .catch(error => {
+                    console.error('Error fetching category:', error);
+                    alert('Failed to load category details');
+                });
+        }
+
+        // Delete category with confirmation
+        function deleteCategory(id, name) {
+            if (confirm(`Are you sure you want to delete "${name}"? This will affect all products in this category.`)) {
+                // Create a form dynamically
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/admin/categories/delete/' + id;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+
+        // Close modal on outside click
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('editModal');
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Auto-hide messages
+        function setupMessages() {
+            const messages = document.querySelectorAll('.message');
+            messages.forEach(msg => {
+                setTimeout(() => {
+                    msg.style.opacity = '0';
+                    msg.style.transform = 'translateY(-20px)';
+                    setTimeout(() => msg.remove(), 500);
+                }, 5000);
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initParticles();
+            setupMessages();
+            
+            // Add animation to new items
+            setTimeout(() => {
+                document.querySelectorAll('.category-item.new').forEach(item => {
+                    item.classList.remove('new');
+                });
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

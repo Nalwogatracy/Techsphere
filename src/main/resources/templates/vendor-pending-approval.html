@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Approval - TechSphere Vendor</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ===== Base & Variables ===== */
+        :root {
+            --tech-blue: #0a1d37;
+            --neon-cyan: #00f3ff;
+            --neon-purple: #b967ff;
+            --electric-blue: #4361ee;
+            --dark-space: #060c21;
+            --cyber-green: #00ff9d;
+            --glow-yellow: #ffcc00;
+            --matrix-green: #00ff41;
+            --light-gray: #e2e8f0;
+            --dark-gray: #1a1a2e;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--dark-space);
+            color: white;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(0, 243, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(185, 103, 255, 0.03) 0%, transparent 50%);
+        }
+
+        /* ===== Animated Background ===== */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 243, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(185, 103, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(67, 97, 238, 0.05) 0%, transparent 50%);
+            animation: gradientShift 20s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        /* ===== Floating Particles ===== */
+        .floating-particles {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            animation: floatParticle 20s infinite linear;
+            opacity: 0.1;
+        }
+
+        @keyframes floatParticle {
+            0% { transform: translateY(100vh) rotate(0deg); }
+            100% { transform: translateY(-100vh) rotate(360deg); }
+        }
+
+        /* ===== Header/Navbar ===== */
+        .navbar {
+            background: linear-gradient(135deg, 
+                rgba(10, 29, 55, 0.95), 
+                rgba(6, 12, 33, 0.95));
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark-space);
+            font-size: 1.5rem;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-tagline {
+            font-size: 0.8rem;
+            color: var(--light-gray);
+            margin-top: 2px;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: var(--light-gray);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--neon-cyan);
+            background: rgba(0, 243, 255, 0.1);
+        }
+
+        .nav-link.active {
+            color: var(--neon-cyan);
+            background: rgba(0, 243, 255, 0.15);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+            border-radius: 2px;
+        }
+
+        /* User Actions */
+        .user-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Notification Bell */
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            width: 45px;
+            height: 45px;
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .notification-bell:hover {
+            background: rgba(0, 243, 255, 0.2);
+            transform: scale(1.1);
+            border-color: var(--neon-cyan);
+        }
+
+        .notification-bell i {
+            font-size: 1.2rem;
+            color: var(--neon-cyan);
+        }
+
+        .notification-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: linear-gradient(135deg, #ff4757, #ff6b81);
+            color: white;
+            font-size: 0.7rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            box-shadow: 0 0 15px rgba(255, 71, 87, 0.5);
+        }
+
+        /* Cart Button */
+        .cart-btn {
+            position: relative;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--electric-blue));
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+        }
+
+        .cart-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 243, 255, 0.5);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: linear-gradient(135deg, #ff4757, #ff6b81);
+            color: white;
+            font-size: 0.8rem;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            box-shadow: 0 0 15px rgba(255, 71, 87, 0.5);
+        }
+
+        /* ===== Main Container ===== */
+        .main-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 30px;
+        }
+
+        /* ===== Pending Approval Card ===== */
+        .pending-card {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.05), 
+                rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 243, 255, 0.15);
+            border-radius: 30px;
+            padding: 4rem 2rem;
+            text-align: center;
+            max-width: 600px;
+            margin: 3rem auto;
+            position: relative;
+            overflow: hidden;
+            animation: fade-in 0.5s ease;
+        }
+
+        .pending-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--neon-cyan), 
+                var(--neon-purple), 
+                transparent);
+            animation: scan-line 4s linear infinite;
+        }
+
+        .pending-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--glow-yellow), #ff9500);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin: 0 auto 2rem;
+            color: var(--dark-space);
+            box-shadow: 0 0 40px rgba(255, 204, 0, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        .pending-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--glow-yellow), #ff9500);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .pending-message {
+            color: var(--light-gray);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin: 3rem 0;
+            position: relative;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+
+        .step {
+            position: relative;
+            z-index: 2;
+            background: var(--dark-space);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: var(--transition);
+        }
+
+        .step.completed {
+            border-color: var(--cyber-green);
+            box-shadow: 0 0 20px rgba(0, 255, 157, 0.3);
+        }
+
+        .step.completed .step-icon {
+            color: var(--cyber-green);
+        }
+
+        .step.active {
+            border-color: var(--glow-yellow);
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.3);
+            transform: scale(1.1);
+        }
+
+        .step.active .step-icon {
+            color: var(--glow-yellow);
+        }
+
+        .step-icon {
+            font-size: 1.5rem;
+            color: var(--light-gray);
+        }
+
+        .step-label {
+            position: absolute;
+            top: 70px;
+            font-size: 0.8rem;
+            color: var(--light-gray);
+            white-space: nowrap;
+        }
+
+        .step.completed .step-label {
+            color: var(--cyber-green);
+        }
+
+        .step.active .step-label {
+            color: var(--glow-yellow);
+        }
+
+        .estimated-time {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .estimated-time h3 {
+            color: var(--neon-cyan);
+            margin-bottom: 1rem;
+        }
+
+        .time-counter {
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            font-family: monospace;
+            letter-spacing: 5px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--neon-cyan), var(--electric-blue));
+            color: var(--dark-space);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 243, 255, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+        }
+
+        .btn-outline:hover {
+            background: rgba(0, 243, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* ===== Footer ===== */
+        footer {
+            background: linear-gradient(135deg, 
+                rgba(10, 29, 55, 0.95), 
+                rgba(6, 12, 33, 0.95));
+            border-top: 1px solid rgba(0, 243, 255, 0.2);
+            color: white;
+            padding: 3rem 2rem 1.5rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            text-align: center;
+            color: var(--light-gray);
+        }
+
+        /* ===== Animations ===== */
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scan-line {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                box-shadow: 0 0 40px rgba(255, 204, 0, 0.3);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 60px rgba(255, 204, 0, 0.6);
+                transform: scale(1.05);
+            }
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+            }
+            
+            .pending-title {
+                font-size: 2rem;
+            }
+            
+            .progress-steps {
+                flex-direction: column;
+                align-items: center;
+                gap: 3rem;
+            }
+            
+            .progress-steps::before {
+                display: none;
+            }
+            
+            .step {
+                margin-bottom: 1rem;
+            }
+            
+            .step-label {
+                position: static;
+                margin-top: 0.5rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    
+    <!-- Floating Particles -->
+    <div class="floating-particles" id="particles"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-store"></i>
+                </div>
+                <div>
+                    <div class="logo-text">TechSphere</div>
+                    <div class="logo-tagline">Vendor Portal</div>
+                </div>
+            </a>
+
+            <nav>
+                <a href="/" class="nav-link">Home</a>
+                <a href="/user/products" class="nav-link">Products</a>
+                <a href="/cart" class="nav-link">Cart</a>
+                <a href="/vendor/dashboard" class="nav-link active">Vendor Dashboard</a>
+            </nav>
+
+            <div class="user-actions">
+                <!-- Notification Bell -->
+                <div class="notification-bell" id="notificationBell" onclick="toggleNotifications()">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-count" id="notificationCount">0</span>
+                </div>
+
+                <!-- Cart Button -->
+                <button class="cart-btn" onclick="window.location.href='/cart'">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartCount" th:text="${cartCount}">0</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="pending-card">
+            <div class="pending-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            
+            <h1 class="pending-title">Pending Approval</h1>
+            
+            <p class="pending-message">
+                Thank you for your interest in becoming a TechSphere vendor! 
+                Your application is currently under review by our team.
+            </p>
+
+            <!-- Progress Steps -->
+            <div class="progress-steps">
+                <div class="step completed">
+                    <i class="fas fa-file-signature step-icon"></i>
+                    <span class="step-label">Application</span>
+                </div>
+                <div class="step active">
+                    <i class="fas fa-search step-icon"></i>
+                    <span class="step-label">Under Review</span>
+                </div>
+                <div class="step">
+                    <i class="fas fa-check-circle step-icon"></i>
+                    <span class="step-label">Approval</span>
+                </div>
+                <div class="step">
+                    <i class="fas fa-store step-icon"></i>
+                    <span class="step-label">Active</span>
+                </div>
+            </div>
+
+            <!-- Estimated Time -->
+            <div class="estimated-time">
+                <h3><i class="fas fa-hourglass-half"></i> Estimated Review Time</h3>
+                <div class="time-counter" id="timeCounter">24-48 hours</div>
+                <p style="color: var(--light-gray); margin-top: 0.5rem; font-size: 0.9rem;">
+                    We'll notify you via email once your application is approved
+                </p>
+            </div>
+
+            <!-- What to expect -->
+            <div style="text-align: left; margin: 2rem 0;">
+                <h3 style="color: var(--neon-cyan); margin-bottom: 1rem;">
+                    <i class="fas fa-list-check"></i> What happens next?
+                </h3>
+                <ul style="list-style: none; color: var(--light-gray);">
+                    <li style="margin-bottom: 0.8rem;">
+                        <i class="fas fa-check-circle" style="color: var(--cyber-green); margin-right: 10px;"></i>
+                        Our team reviews your vendor application
+                    </li>
+                    <li style="margin-bottom: 0.8rem;">
+                        <i class="fas fa-check-circle" style="color: var(--cyber-green); margin-right: 10px;"></i>
+                        You'll receive an email notification
+                    </li>
+                    <li style="margin-bottom: 0.8rem;">
+                        <i class="fas fa-check-circle" style="color: var(--cyber-green); margin-right: 10px;"></i>
+                        Once approved, you can start listing products
+                    </li>
+                    <li style="margin-bottom: 0.8rem;">
+                        <i class="fas fa-check-circle" style="color: var(--cyber-green); margin-right: 10px;"></i>
+                        Access to vendor dashboard and analytics
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a href="/" class="btn btn-outline">
+                    <i class="fas fa-home"></i>
+                    Back to Home
+                </a>
+                <a href="/user/contact" class="btn btn-primary">
+                    <i class="fas fa-headset"></i>
+                    Contact Support
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 TechSphere. All rights reserved. | Vendor Portal</p>
+        </div>
+    </footer>
+
+    <script>
+        // Simple countdown timer simulation
+        document.addEventListener('DOMContentLoaded', function() {
+            initParticles();
+            
+            // Simulate time counter
+            const timeCounter = document.getElementById('timeCounter');
+            let hours = 24;
+            
+            setInterval(() => {
+                if (hours > 0) {
+                    hours--;
+                    timeCounter.textContent = hours + ' hours remaining';
+                }
+            }, 3600000); // Update every hour (for demo purposes)
+        });
+
+        function initParticles() {
+            const container = document.getElementById('particles');
+            if (!container) return;
+
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.cssText = `
+                    left: ${Math.random() * 100}%;
+                    top: ${Math.random() * 100}%;
+                    width: ${Math.random() * 3 + 1}px;
+                    height: ${Math.random() * 3 + 1}px;
+                    background: var(--glow-yellow);
+                    animation-duration: ${Math.random() * 20 + 10}s;
+                    animation-delay: ${Math.random() * 5}s;
+                `;
+                container.appendChild(particle);
+            }
+        }
+
+        function toggleNotifications() {
+            // Notification functionality
+            console.log('Toggle notifications');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Listings - TechSphere Vendor</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ===== Base & Variables ===== */
+        :root {
+            --tech-blue: #0a1d37;
+            --neon-cyan: #00f3ff;
+            --neon-purple: #b967ff;
+            --electric-blue: #4361ee;
+            --dark-space: #060c21;
+            --cyber-green: #00ff9d;
+            --glow-yellow: #ffcc00;
+            --matrix-green: #00ff41;
+            --light-gray: #e2e8f0;
+            --dark-gray: #1a1a2e;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--dark-space);
+            color: white;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(0, 243, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(185, 103, 255, 0.03) 0%, transparent 50%);
+        }
+
+        /* ===== Animated Background ===== */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 243, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(185, 103, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(67, 97, 238, 0.05) 0%, transparent 50%);
+            animation: gradientShift 20s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        /* ===== Floating Particles ===== */
+        .floating-particles {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            animation: floatParticle 20s infinite linear;
+            opacity: 0.1;
+        }
+
+        @keyframes floatParticle {
+            0% { transform: translateY(100vh) rotate(0deg); }
+            100% { transform: translateY(-100vh) rotate(360deg); }
+        }
+
+        /* ===== Header/Navbar ===== */
+        .navbar {
+            background: linear-gradient(135deg, 
+                rgba(10, 29, 55, 0.95), 
+                rgba(6, 12, 33, 0.95));
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark-space);
+            font-size: 1.5rem;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-tagline {
+            font-size: 0.8rem;
+            color: var(--light-gray);
+            margin-top: 2px;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: var(--light-gray);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--neon-cyan);
+            background: rgba(0, 243, 255, 0.1);
+        }
+
+        .nav-link.active {
+            color: var(--neon-cyan);
+            background: rgba(0, 243, 255, 0.15);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+            border-radius: 2px;
+        }
+
+        /* User Actions */
+        .user-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Notification Bell */
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            width: 45px;
+            height: 45px;
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .notification-bell:hover {
+            background: rgba(0, 243, 255, 0.2);
+            transform: scale(1.1);
+            border-color: var(--neon-cyan);
+        }
+
+        .notification-bell i {
+            font-size: 1.2rem;
+            color: var(--neon-cyan);
+        }
+
+        .notification-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: linear-gradient(135deg, #ff4757, #ff6b81);
+            color: white;
+            font-size: 0.7rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            box-shadow: 0 0 15px rgba(255, 71, 87, 0.5);
+        }
+
+        /* Notifications Panel */
+        .notifications-panel {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            width: 350px;
+            background: linear-gradient(135deg, 
+                rgba(10, 29, 55, 0.95), 
+                rgba(6, 12, 33, 0.95));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 15px;
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: var(--transition);
+            z-index: 1001;
+            box-shadow: var(--shadow-hover);
+        }
+
+        .notifications-panel.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .notifications-header {
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            color: var(--dark-space);
+            padding: 1rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notifications-header span:last-child {
+            background: rgba(6, 12, 33, 0.2);
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .notifications-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .notifications-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .notifications-list::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .notifications-list::-webkit-scrollbar-thumb {
+            background: var(--neon-cyan);
+            border-radius: 3px;
+        }
+
+        .notification-item {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0, 243, 255, 0.1);
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .notification-item:hover {
+            background: rgba(0, 243, 255, 0.05);
+        }
+
+        .notification-item.unread {
+            background: rgba(0, 243, 255, 0.02);
+            border-left: 3px solid var(--neon-cyan);
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark-space);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+            font-size: 0.9rem;
+            color: white;
+        }
+
+        .notification-time {
+            color: var(--light-gray);
+            font-size: 0.7rem;
+        }
+
+        /* Cart Button */
+        .cart-btn {
+            position: relative;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--electric-blue));
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+        }
+
+        .cart-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 243, 255, 0.5);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: linear-gradient(135deg, #ff4757, #ff6b81);
+            color: white;
+            font-size: 0.8rem;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            box-shadow: 0 0 15px rgba(255, 71, 87, 0.5);
+        }
+
+        /* ===== Main Container ===== */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 30px;
+        }
+
+        /* ===== Welcome Header ===== */
+        .welcome-header {
+            background: linear-gradient(135deg, 
+                rgba(10, 29, 55, 0.9), 
+                rgba(6, 12, 33, 0.9));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--neon-cyan), 
+                var(--neon-purple), 
+                transparent);
+            animation: scan-line 4s linear infinite;
+        }
+
+        .welcome-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .welcome-title h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-title p {
+            color: var(--light-gray);
+            font-size: 1rem;
+        }
+
+        .add-btn {
+            background: linear-gradient(135deg, var(--neon-cyan), var(--electric-blue));
+            color: var(--dark-space);
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 243, 255, 0.3);
+        }
+
+        /* ===== Products Section ===== */
+        .products-section {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.05), 
+                rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 243, 255, 0.15);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .products-table th {
+            text-align: left;
+            padding: 1rem;
+            color: var(--neon-cyan);
+            font-weight: 600;
+            border-bottom: 2px solid rgba(0, 243, 255, 0.2);
+        }
+
+        .products-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0, 243, 255, 0.1);
+            color: var(--light-gray);
+        }
+
+        .products-table tr {
+            transition: var(--transition);
+        }
+
+        .products-table tbody tr:hover {
+            background: rgba(0, 243, 255, 0.05);
+        }
+
+        .product-image-small {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid rgba(0, 243, 255, 0.3);
+        }
+
+        .product-image-placeholder {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--dark-space);
+        }
+
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-badge.approved {
+            background: rgba(0, 255, 157, 0.2);
+            color: var(--cyber-green);
+            border: 1px solid rgba(0, 255, 157, 0.3);
+        }
+
+        .status-badge.pending {
+            background: rgba(255, 204, 0, 0.2);
+            color: var(--glow-yellow);
+            border: 1px solid rgba(255, 204, 0, 0.3);
+        }
+
+        .condition-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .condition-badge.like-new {
+            background: rgba(0, 243, 255, 0.2);
+            color: var(--neon-cyan);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+        }
+
+        .condition-badge.good {
+            background: rgba(0, 255, 157, 0.2);
+            color: var(--cyber-green);
+            border: 1px solid rgba(0, 255, 157, 0.3);
+        }
+
+        .condition-badge.fair {
+            background: rgba(255, 204, 0, 0.2);
+            color: var(--glow-yellow);
+            border: 1px solid rgba(255, 204, 0, 0.3);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem;
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 6px;
+            color: var(--neon-cyan);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.85rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .action-btn:hover {
+            background: var(--neon-cyan);
+            color: var(--dark-space);
+        }
+
+        .action-btn.delete {
+            color: #ff4757;
+            border-color: rgba(255, 71, 87, 0.3);
+        }
+
+        .action-btn.delete:hover {
+            background: #ff4757;
+            color: white;
+        }
+
+        /* ===== Additional styles for products page ===== */
+        .filters-bar {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.05), 
+                rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 243, 255, 0.15);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 0.95rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+        }
+
+        .filter-select {
+            padding: 0.8rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            min-width: 150px;
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+        }
+
+        .filter-select option {
+            background: var(--dark-space);
+            color: white;
+        }
+
+        .summary-stats {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .summary-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 1rem 1.5rem;
+            border-left: 3px solid var(--neon-cyan);
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--neon-cyan);
+            margin-bottom: 0.3rem;
+        }
+
+        .summary-label {
+            color: var(--light-gray);
+            font-size: 0.85rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.05), 
+                rgba(255, 255, 255, 0.02));
+            border: 2px dashed rgba(0, 243, 255, 0.2);
+            border-radius: 20px;
+            margin: 3rem 0;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            color: rgba(0, 243, 255, 0.3);
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-state h3 {
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: var(--light-gray);
+            margin-bottom: 1.5rem;
+        }
+
+        /* ===== Footer ===== */
+        footer {
+            background: linear-gradient(135deg, 
+                rgba(10, 29, 55, 0.95), 
+                rgba(6, 12, 33, 0.95));
+            border-top: 1px solid rgba(0, 243, 255, 0.2);
+            color: white;
+            padding: 3rem 2rem 1.5rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+        }
+
+        .footer-section h4 {
+            color: var(--neon-cyan);
+            margin-bottom: 1rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links a {
+            color: var(--light-gray);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--neon-cyan);
+            transform: translateX(5px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(0, 243, 255, 0.1);
+            color: var(--light-gray);
+        }
+
+        /* ===== Animations ===== */
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scan-line {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 1024px) {
+            .summary-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+            }
+            
+            .welcome-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .filters-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .filter-group {
+                flex-direction: column;
+            }
+            
+            .filter-select {
+                width: 100%;
+            }
+            
+            .summary-stats {
+                flex-direction: column;
+            }
+            
+            .summary-item {
+                width: 100%;
+            }
+            
+            .products-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-container {
+                padding: 0 15px;
+            }
+            
+            nav {
+                gap: 0.5rem;
+            }
+            
+            .nav-link {
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+            
+            .logo-text {
+                font-size: 1.4rem;
+            }
+            
+            .welcome-header {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    
+    <!-- Floating Particles -->
+    <div class="floating-particles" id="particles"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-store"></i>
+                </div>
+                <div>
+                    <div class="logo-text">TechSphere</div>
+                    <div class="logo-tagline">Vendor Portal</div>
+                </div>
+            </a>
+
+            <nav>
+                <a href="/" class="nav-link">Home</a>
+                <a href="/user/products" class="nav-link">Products</a>
+                <a href="/cart" class="nav-link">Cart</a>
+                <a href="/vendor/dashboard" class="nav-link">Dashboard</a>
+                <a href="/vendor/products" class="nav-link active">My Listings</a>
+            </nav>
+
+            <div class="user-actions">
+                <!-- Notification Bell -->
+                <div class="notification-bell" id="notificationBell" onclick="toggleNotifications()">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-count" id="notificationCount">0</span>
+                </div>
+
+                <!-- Notifications Panel -->
+                <div class="notifications-panel" id="notificationsPanel">
+                    <div class="notifications-header">
+                        <span>Notifications</span>
+                        <span id="unreadCount">0 unread</span>
+                    </div>
+                    <div class="notifications-list" id="notificationsList">
+                        <!-- Notifications will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Cart Button -->
+                <button class="cart-btn" onclick="window.location.href='/cart'">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartCount" th:text="${cartCount}">0</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="dashboard-container">
+        <!-- Page Header -->
+        <div class="welcome-header">
+            <div class="welcome-content">
+                <div class="welcome-title">
+                    <h1>My Listings</h1>
+                    <p>Manage your used product listings</p>
+                </div>
+                <a href="/vendor/products/add" class="add-btn">
+                    <i class="fas fa-plus"></i> Add New Listing
+                </a>
+            </div>
+        </div>
+
+        <!-- Summary Stats -->
+        <div class="summary-stats">
+            <div class="summary-item">
+                <div class="summary-value" th:text="${#lists.size(products)}">0</div>
+                <div class="summary-label">Total Listings</div>
+            </div>
+            <div class="summary-item" style="border-left-color: var(--cyber-green);">
+                <div class="summary-value" th:text="${approvedCount}">0</div>
+                <div class="summary-label">Approved</div>
+            </div>
+            <div class="summary-item" style="border-left-color: var(--glow-yellow);">
+                <div class="summary-value" th:text="${pendingCount}">0</div>
+                <div class="summary-label">Pending</div>
+            </div>
+            <div class="summary-item" style="border-left-color: var(--neon-purple);">
+                <div class="summary-value" th:text="'$' + ${#numbers.formatDecimal(totalValue, 1, 2)}">$0</div>
+                <div class="summary-label">Total Value</div>
+            </div>
+        </div>
+
+        <!-- Filters Bar -->
+        <div class="filters-bar">
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Search by product name..." id="searchInput" onkeyup="filterProducts()">
+            </div>
+            <div class="filter-group">
+                <select class="filter-select" id="statusFilter" onchange="filterProducts()">
+                    <option value="all">All Status</option>
+                    <option value="approved">Approved</option>
+                    <option value="pending">Pending</option>
+                </select>
+                <select class="filter-select" id="conditionFilter" onchange="filterProducts()">
+                    <option value="all">All Conditions</option>
+                    <option value="Like New">Like New</option>
+                    <option value="Good">Good</option>
+                    <option value="Fair">Fair</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Products Table -->
+        <div class="products-section">
+            <div class="table-container">
+                <table class="products-table" th:if="${not #lists.isEmpty(products)}">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Product Details</th>
+                            <th>Price</th>
+                            <th>Original Price</th>
+                            <th>Condition</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productsTableBody">
+                        <tr th:each="product : ${products}" 
+                            th:data-status="${product.approved ? 'approved' : 'pending'}"
+                            th:data-condition="${product.condition}">
+                            <td>
+                                <div th:if="${product.productImage != null}" class="product-image-placeholder">
+                                    <img th:src="${product.productImage}" class="product-image-small" th:alt="${product.productName}">
+                                </div>
+                                <div th:if="${product.productImage == null}" class="product-image-placeholder">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                            </td>
+                            <td>
+                                <strong th:text="${product.productName}">Gaming Laptop</strong>
+                                <div style="font-size: 0.85rem; color: var(--light-gray);" th:text="${sale.shortDescription}">
+                                    Description
+                                </div>
+                            </td>
+                            <td th:text="'$' + ${#numbers.formatDecimal(product.price, 1, 2)}">$1,299.99</td>
+                            <td th:text="'$' + ${#numbers.formatDecimal(product.originalPrice, 1, 2)}">$1,499.99</td>
+                            <td>
+                                <span class="condition-badge" 
+                                      th:classappend="${product.condition == 'Like New' ? 'like-new' : 
+                                                        product.condition == 'Good' ? 'good' : 
+                                                        product.condition == 'Fair' ? 'fair' : ''}">
+                                    <span th:text="${product.condition}">Like New</span>
+                                </span>
+                            </td>
+                            <td th:text="${product.category != null ? product.category.name : 'Uncategorized'}">Electronics</td>
+                            <td>
+                                <span class="status-badge" 
+                                      th:classappend="${product.approved} ? 'approved' : 'pending'">
+                                    <span th:text="${product.approved} ? 'Approved' : 'Pending'">Pending</span>
+                                </span>
+                            </td>
+                            <td th:text="${#temporals.format(product.saleDate, 'dd MMM yyyy')}">15 Jan 2024</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a th:href="@{'/vendor/products/edit/' + ${product.id}}" class="action-btn" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form th:action="@{'/vendor/products/delete/' + ${product.id}}" method="post" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this listing?')">
+                                        <button type="submit" class="action-btn delete" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div th:if="${#lists.isEmpty(products)}" class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-box-open"></i>
+                    </div>
+                    <h3>No Listings Found</h3>
+                    <p>You haven't created any product listings yet.</p>
+                    <a href="/vendor/products/add" class="add-btn" style="margin-top: 1rem; display: inline-block;">
+                        <i class="fas fa-plus"></i> Add Your First Listing
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Vendor Dashboard</h4>
+                <ul class="footer-links">
+                    <li><a href="/vendor/dashboard">Overview</a></li>
+                    <li><a href="/vendor/products">My Listings</a></li>
+                    <li><a href="/vendor/analytics">Analytics</a></li>
+                    <li><a href="/vendor/settings">Settings</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul class="footer-links">
+                    <li><a href="/help">Help Center</a></li>
+                    <li><a href="/user/contact">Contact Us</a></li>
+                    <li><a href="/faq">FAQ</a></li>
+                    <li><a href="/terms">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <ul class="footer-links">
+                    <li><i class="fas fa-envelope"></i> vendor@techsphere.com</li>
+                    <li><i class="fas fa-phone"></i> +256 74-100-7182</li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2024 TechSphere. All rights reserved. | Vendor Portal</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize particles
+        document.addEventListener('DOMContentLoaded', function() {
+            initParticles();
+            loadNotifications();
+        });
+
+        function initParticles() {
+            const container = document.getElementById('particles');
+            if (!container) return;
+
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.cssText = `
+                    left: ${Math.random() * 100}%;
+                    top: ${Math.random() * 100}%;
+                    width: ${Math.random() * 3 + 1}px;
+                    height: ${Math.random() * 3 + 1}px;
+                    background: ${i % 3 === 0 ? 'var(--neon-cyan)' : i % 3 === 1 ? 'var(--neon-purple)' : 'var(--electric-blue)'};
+                    animation-duration: ${Math.random() * 20 + 10}s;
+                    animation-delay: ${Math.random() * 5}s;
+                `;
+                container.appendChild(particle);
+            }
+        }
+
+        function toggleNotifications() {
+            const panel = document.getElementById('notificationsPanel');
+            if (panel) {
+                panel.classList.toggle('show');
+            }
+        }
+
+        function loadNotifications() {
+            // Load notifications from localStorage or server
+            const notificationsList = document.getElementById('notificationsList');
+            const unreadCount = document.getElementById('unreadCount');
+            const notificationCount = document.getElementById('notificationCount');
+            
+            // Example notifications
+            const notifications = [
+                { title: 'Listing Approved!', message: 'Your product "Gaming Laptop" has been approved', time: '5 min ago', read: false },
+                { title: 'New Sale!', message: 'Someone bought your "Smart Watch"', time: '1 hour ago', read: false },
+                { title: 'Listing Pending', message: 'Your new listing is under review', time: '2 hours ago', read: true }
+            ];
+
+            if (notificationsList) {
+                notificationsList.innerHTML = notifications.map(n => `
+                    <div class="notification-item ${n.read ? '' : 'unread'}">
+                        <div class="notification-icon">
+                            <i class="fas ${n.title.includes('Approved') ? 'fa-check-circle' : n.title.includes('Sale') ? 'fa-shopping-cart' : 'fa-clock'}"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-title">${n.title}</div>
+                            <div class="notification-time">${n.time}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            const unread = notifications.filter(n => !n.read).length;
+            if (unreadCount) {
+                unreadCount.textContent = unread + ' unread';
+            }
+            if (notificationCount) {
+                notificationCount.textContent = unread;
+            }
+        }
+
+        function filterProducts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const conditionFilter = document.getElementById('conditionFilter').value;
+            
+            const rows = document.querySelectorAll('#productsTableBody tr');
+            
+            rows.forEach(row => {
+                const productName = row.querySelector('td:nth-child(2) strong').textContent.toLowerCase();
+                const status = row.dataset.status;
+                const condition = row.dataset.condition;
+                
+                const matchesSearch = productName.includes(searchTerm);
+                const matchesStatus = statusFilter === 'all' || status === statusFilter;
+                const matchesCondition = conditionFilter === 'all' || condition === conditionFilter;
+                
+                row.style.display = matchesSearch && matchesStatus && matchesCondition ? '' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>

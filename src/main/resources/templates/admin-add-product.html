@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Product - TechSphere Admin</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ===== Base & Variables ===== */
+        :root {
+            --tech-blue: #0a1d37;
+            --neon-cyan: #00f3ff;
+            --neon-purple: #b967ff;
+            --electric-blue: #4361ee;
+            --dark-space: #060c21;
+            --cyber-green: #00ff9d;
+            --glow-yellow: #ffcc00;
+            --matrix-green: #00ff41;
+            --light-gray: #e2e8f0;
+            --dark-gray: #1a1a2e;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--dark-space);
+            color: white;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 243, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(185, 103, 255, 0.03) 0%, transparent 50%);
+        }
+
+        /* ===== Admin Container ===== */
+        .admin-container {
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ===== Header ===== */
+        .admin-header {
+            background: linear-gradient(135deg, 
+                rgba(10, 29, 55, 0.9), 
+                rgba(6, 12, 33, 0.9));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 20px;
+            padding: 25px 30px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .admin-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--neon-cyan), 
+                var(--neon-purple), 
+                transparent);
+            animation: scan-line 4s linear infinite;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
+        }
+
+        .title-text h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 800;
+        }
+
+        .title-text p {
+            color: var(--light-gray);
+            font-size: 0.95rem;
+            margin-top: 5px;
+        }
+
+        /* ===== Action Bar ===== */
+        .action-bar {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .admin-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--neon-cyan), var(--electric-blue));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 243, 255, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+        }
+
+        .btn-outline:hover {
+            background: rgba(0, 243, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* ===== Form Container ===== */
+        .form-container {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.05), 
+                rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 243, 255, 0.15);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-container:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                0 0 30px rgba(0, 243, 255, 0.2);
+        }
+
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-header h2 {
+            font-size: 1.5rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-header-icon {
+            color: var(--neon-cyan);
+        }
+
+        .product-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 15px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-new {
+            background: rgba(0, 255, 157, 0.2);
+            color: var(--cyber-green);
+            border: 1px solid rgba(0, 255, 157, 0.3);
+        }
+
+        /* ===== Form Layout ===== */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .form-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .form-section {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(0, 243, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            color: var(--neon-cyan);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-title i {
+            font-size: 1.1rem;
+        }
+
+        /* ===== Form Elements ===== */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--light-gray);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .required-field::after {
+            content: " *";
+            color: #ff4757;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            transition: var(--transition);
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            transition: var(--transition);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2300f3ff'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+
+        .form-text {
+            font-size: 0.85rem;
+            color: var(--light-gray);
+            margin-top: 5px;
+            padding-left: 5px;
+        }
+
+        /* ===== Number Input ===== */
+        .number-input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .number-input-group .form-input {
+            padding-right: 50px;
+            padding-left: 40px;
+        }
+
+        .currency-symbol {
+            position: absolute;
+            left: 12px;
+            color: var(--neon-cyan);
+            font-weight: 600;
+        }
+
+        /* ===== Checkbox & Switch ===== */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: var(--transition);
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 3px;
+            background-color: white;
+            transition: var(--transition);
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--neon-cyan);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(28px);
+        }
+
+        .checkbox-label {
+            color: var(--light-gray);
+            font-weight: 500;
+        }
+
+        /* ===== Image Upload Section ===== */
+        .image-upload-section {
+            grid-column: 1 / -1;
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(0, 243, 255, 0.3);
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .upload-area:hover {
+            border-color: var(--neon-cyan);
+            background: rgba(0, 243, 255, 0.05);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--neon-cyan);
+            background: rgba(0, 243, 255, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--neon-cyan);
+            margin-bottom: 15px;
+        }
+
+        .upload-text h4 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .upload-text p {
+            color: var(--light-gray);
+            margin-bottom: 15px;
+        }
+
+        .browse-btn {
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .browse-btn:hover {
+            background: var(--neon-cyan);
+            color: var(--dark-space);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        /* ===== Preview Images ===== */
+        .preview-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .image-preview {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .image-preview:hover img {
+            transform: scale(1.1);
+        }
+
+        .remove-image {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 30px;
+            height: 30px;
+            background: rgba(255, 71, 87, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .image-preview:hover .remove-image {
+            opacity: 1;
+        }
+
+        .remove-image:hover {
+            background: #ff4757;
+            transform: scale(1.1);
+        }
+
+        .image-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            color: var(--light-gray);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ===== Form Actions ===== */
+        .form-actions {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 20px;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-reset {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--light-gray);
+        }
+
+        .btn-reset:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* ===== Animations ===== */
+        @keyframes scan-line {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        /* ===== Loading Overlay ===== */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(6, 12, 33, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 3px solid rgba(0, 243, 255, 0.1);
+            border-top-color: var(--neon-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== Responsive Design ===== */
+        @media (max-width: 1024px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .form-actions > * {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 15px;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .action-bar {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+            
+            .preview-container {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .admin-header {
+                padding: 20px;
+            }
+            
+            .page-title {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .form-grid {
+                gap: 15px;
+            }
+            
+            .form-section {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-content">
+                <div class="page-title">
+                    <div class="page-icon">
+                        <i class="fas fa-box-open"></i>
+                    </div>
+                    <div class="title-text">
+                        <h1>Add New Product</h1>
+                        <p>Add a new product to the TechSphere catalog</p>
+                    </div>
+                </div>
+                
+                <div class="action-bar">
+                    <a th:href="@{/admin/products}" class="admin-btn btn-outline">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Products
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Product Form -->
+        <div class="form-container">
+            <div class="form-header">
+                <h2><i class="fas fa-plus-circle form-header-icon"></i>Product Details</h2>
+                <div class="product-status">
+                    <span class="status-badge status-new">New Product</span>
+                </div>
+            </div>
+            
+            <form th:action="@{/admin/products/add}" th:object="${product}" method="post" enctype="multipart/form-data" id="productForm">
+                <div class="form-grid">
+                    <!-- Left Column - Basic Information -->
+                    <div class="form-column">
+                        <!-- Product Information -->
+                        <div class="form-section">
+                            <h3 class="section-title">
+                                <i class="fas fa-info-circle"></i>Product Information
+                            </h3>
+                            
+                            <div class="form-group">
+                                <label for="name" class="form-label required-field">Product Name</label>
+                                <input type="text" 
+                                       class="form-input" 
+                                       id="name" 
+                                       th:field="*{name}" 
+                                       placeholder="Enter product name" 
+                                       required
+                                       maxlength="200">
+                                <div class="form-text">Enter a descriptive name for the product (max 200 characters)</div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="category" class="form-label required-field">Category</label>
+                                <select class="form-select" 
+                                        id="category" 
+                                        th:field="*{category}"
+                                        required>
+                                    <option value="">Select a category</option>
+                                    <option th:each="category : ${categories}" 
+                                            th:value="${category.id}"
+                                            th:text="${category.name}">
+                                        Category
+                                    </option>
+                                </select>
+                                <div class="form-text">Choose the most relevant category for this product</div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="description" class="form-label required-field">Description</label>
+                                <textarea class="form-textarea" 
+                                          id="description" 
+                                          th:field="*{description}" 
+                                          placeholder="Describe the product features, specifications, and benefits"
+                                          required
+                                          rows="4"></textarea>
+                                <div class="form-text">Provide detailed information about the product</div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="features" class="form-label">Key Features</label>
+                                <textarea class="form-textarea" 
+                                          id="features" 
+                                          th:field="*{features}" 
+                                          placeholder="List key features (one per line)"
+                                          rows="3"></textarea>
+                                <div class="form-text">Enter each feature on a new line</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Pricing & Inventory -->
+                        <div class="form-section">
+                            <h3 class="section-title">
+                                <i class="fas fa-tag"></i>Pricing & Inventory
+                            </h3>
+                            
+                            <div class="form-group">
+                                <label for="price" class="form-label required-field">Price</label>
+                                <div class="number-input-group">
+                                    <span class="currency-symbol">$</span>
+                                    <input type="number" 
+                                           class="form-input" 
+                                           id="price" 
+                                           th:field="*{price}" 
+                                           placeholder="0.00"
+                                           step="0.01"
+                                           min="0"
+                                           required>
+                                </div>
+                                <div class="form-text">Enter the selling price in USD</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="originalPrice" class="form-label">Original Price</label>
+                                <div class="number-input-group">
+                                    <span class="currency-symbol">$</span>
+                                    <input type="number" 
+                                           class="form-input" 
+                                           id="originalPrice" 
+                                           th:field="*{originalPrice}" 
+                                           placeholder="0.00"
+                                           step="0.01"
+                                           min="0">
+                                </div>
+                                <div class="form-text">
+                                    Enter original price if this product is on discount. Leave empty if no discount.
+                                </div>
+                            </div>
+
+                            
+                            <div class="form-group">
+                                <label for="stockQuantity" class="form-label required-field">Stock Quantity</label>
+                                <input type="number" 
+                                       class="form-input" 
+                                       id="stockQuantity" 
+                                       th:field="*{stockQuantity}" 
+                                       placeholder="0"
+                                       min="0"
+                                       required>
+                                <div class="form-text">Enter the initial stock quantity</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Column - Additional Settings -->
+                    <div class="form-column">
+                        <!-- Product Settings -->
+                        <div class="form-section">
+                            <h3 class="section-title">
+                                <i class="fas fa-cog"></i>Product Settings
+                            </h3>
+                            
+                            <div class="form-group">
+                                <div class="checkbox-group">
+                                    <label class="switch">
+                                        <input type="checkbox" 
+                                               id="featured" 
+                                               name="featured" 
+                                               th:checked="${product.featured}">
+                                        <span class="slider"></span>
+                                    </label>
+                                    <label for="featured" class="checkbox-label">Featured Product</label>
+                                </div>
+                                <div class="form-text">Featured products will be highlighted on the homepage</div>
+                            </div>
+                        </div>
+                        
+                        <!-- System Information -->
+                        <div class="form-section">
+                            <h3 class="section-title">
+                                <i class="fas fa-server"></i>System Information
+                            </h3>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Product ID</label>
+                                <input type="text" 
+                                       class="form-input" 
+                                       value="Auto-generated" 
+                                       readonly
+                                       style="background: rgba(0, 0, 0, 0.4); color: var(--light-gray);">
+                                <div class="form-text">Automatically generated when saved</div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Created Date</label>
+                                <input type="text" 
+                                       class="form-input" 
+                                       th:value="${#temporals.format(#temporals.createNow(), 'dd MMM yyyy HH:mm')}" 
+                                       readonly
+                                       style="background: rgba(0, 0, 0, 0.4); color: var(--light-gray);">
+                                <div class="form-text">Date and time when the product is created</div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Images Count</label>
+                                <input type="text" 
+                                       class="form-input" 
+                                       value="0" 
+                                       readonly
+                                       style="background: rgba(0, 0, 0, 0.4); color: var(--light-gray);"
+                                       id="imagesCount">
+                                <div class="form-text">Number of images uploaded for this product</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Image Upload Section (Full Width) -->
+                    <div class="image-upload-section form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-images"></i>Product Images
+                        </h3>
+                        
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <div class="upload-text">
+                                <h4>Drag & Drop Images Here</h4>
+                                <p>or click to browse files (JPG, PNG, GIF, WebP)</p>
+                                <p class="form-text">Upload up to 10 images. First image will be used as the main product image.</p>
+                            </div>
+                            <button type="button" class="browse-btn" id="browseBtn">
+                                <i class="fas fa-folder-open"></i> Browse Files
+                            </button>
+                            <input type="file" 
+                                   class="file-input" 
+                                   id="images"
+                                   name="imageFiles"
+                                   accept="image/*"
+                                   multiple>
+                        </div>
+                        
+                        <!-- Preview Container -->
+                        <div class="preview-container" id="previewContainer">
+                            <!-- Image previews will be added here dynamically -->
+                        </div>
+                        
+                        <!-- Image Upload Guidelines -->
+                        <div class="form-text" style="margin-top: 20px; padding: 15px; background: rgba(0, 0, 0, 0.2); border-radius: 10px;">
+                            <p><strong>Image Guidelines:</strong></p>
+                            <ul style="list-style: none; padding-left: 5px;">
+                                <li><i class="fas fa-check" style="color: var(--cyber-green); margin-right: 5px;"></i> Recommended size: 800x800px or larger</li>
+                                <li><i class="fas fa-check" style="color: var(--cyber-green); margin-right: 5px;"></i> Max file size: 5MB per image</li>
+                                <li><i class="fas fa-check" style="color: var(--cyber-green); margin-right: 5px;"></i> Supported formats: JPG, PNG, GIF, WebP</li>
+                                <li><i class="fas fa-check" style="color: var(--cyber-green); margin-right: 5px;"></i> First image will be used as the main product thumbnail</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <div>
+                            <a th:href="@{/admin/products}" class="admin-btn btn-secondary">
+                                <i class="fas fa-times"></i>
+                                Cancel
+                            </a>
+                        </div>
+                        
+                        <div class="form-actions-right" style="display: flex; gap: 10px;">
+                            <button type="reset" class="admin-btn btn-reset">
+                                <i class="fas fa-redo"></i>
+                                Reset Form
+                            </button>
+                            <button type="submit" class="admin-btn btn-primary" id="submitBtn">
+                                <i class="fas fa-save"></i>
+                                Create Product
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <h3 style="color: var(--neon-cyan); margin-bottom: 10px;">Creating Product...</h3>
+        <p style="color: var(--light-gray);">Uploading images and saving product details</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('images');
+            const previewContainer = document.getElementById('previewContainer');
+            const browseBtn = document.getElementById('browseBtn');
+            const imagesCount = document.getElementById('imagesCount');
+            const productForm = document.getElementById('productForm');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            let uploadedFiles = [];
+            const maxFiles = 10;
+            const maxFileSize = 5 * 1024 * 1024; // 5MB in bytes
+
+            // Open file browser when clicking upload area or browse button
+            uploadArea.addEventListener('click', () => fileInput.click());
+            browseBtn.addEventListener('click', () => fileInput.click());
+
+            // File input change event
+            fileInput.addEventListener('change', handleFileSelect);
+            
+            // Drag and drop events
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileSelect({ target: fileInput });
+                }
+            });
+
+            // Handle file selection
+            function handleFileSelect(e) {
+                const files = Array.from(e.target.files);
+                
+                // Check file count limit
+                if (uploadedFiles.length + files.length > maxFiles) {
+                    alert(`Maximum ${maxFiles} images allowed. You already have ${uploadedFiles.length} images.`);
+                    return;
+                }
+                
+                // Process each file
+                files.forEach(file => {
+                    // Check file type
+                    if (!file.type.startsWith('image/')) {
+                        alert(`File "${file.name}" is not an image. Please upload image files only.`);
+                        return;
+                    }
+                    
+                    // Check file size
+                    if (file.size > maxFileSize) {
+                        alert(`File "${file.name}" exceeds 5MB limit. Please choose a smaller file.`);
+                        return;
+                    }
+                    
+                    // Add to uploaded files
+                    uploadedFiles.push(file);
+                    
+                    // Create preview
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        createImagePreview(file, e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                });
+                
+                // Update images count
+                updateImagesCount();
+                
+                // Clear file input to allow selecting same files again
+                fileInput.value = '';
+            }
+
+            // Create image preview element
+            function createImagePreview(file, dataUrl) {
+                const preview = document.createElement('div');
+                preview.className = 'image-preview';
+                preview.dataset.fileName = file.name;
+                
+                const img = document.createElement('img');
+                img.src = dataUrl;
+                img.alt = file.name;
+                
+                const removeBtn = document.createElement('div');
+                removeBtn.className = 'remove-image';
+                removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                removeBtn.onclick = () => removeImage(preview, file);
+                
+                const info = document.createElement('div');
+                info.className = 'image-info';
+                info.textContent = `${file.name} (${formatFileSize(file.size)})`;
+                
+                preview.appendChild(img);
+                preview.appendChild(removeBtn);
+                preview.appendChild(info);
+                previewContainer.appendChild(preview);
+            }
+
+            // Remove image from preview and uploaded files
+            function removeImage(previewElement, file) {
+                const fileName = previewElement.dataset.fileName;
+                uploadedFiles = uploadedFiles.filter(f => f.name !== fileName);
+                previewElement.remove();
+                updateImagesCount();
+            }
+
+            // Update images count display
+            function updateImagesCount() {
+                imagesCount.value = uploadedFiles.length;
+                imagesCount.style.color = uploadedFiles.length > 0 ? 'var(--neon-cyan)' : 'var(--light-gray)';
+            }
+
+            // Format file size for display
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            // Form submission
+            productForm.addEventListener('submit', function(e) {
+                e.preventDefault(); // always prevent default first
+
+                // Native validation
+                if (!productForm.checkValidity()) {
+                    const invalidFields = productForm.querySelectorAll(':invalid');
+                    invalidFields.forEach(field => {
+                        field.style.borderColor = '#ff4757';
+                        field.style.boxShadow = '0 0 10px rgba(255, 71, 87, 0.3)';
+                    });
+                    return;
+                }
+
+                const formData = new FormData(productForm);
+
+                // IMPORTANT: images must be added manually
+                uploadedFiles.forEach(file => {
+                    formData.append('imageFiles', file);
+                });
+
+                // UI stuff (keep it ✨)
+                loadingOverlay.classList.add('active');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                submitBtn.disabled = true;
+
+                fetch(productForm.action, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => {
+                    if (!res.ok) throw new Error("Upload failed");
+                    window.location.href = '/admin/products';
+                })
+                .catch(err => {
+                    alert('Error uploading product');
+                    console.error(err);
+                })
+                .finally(() => {
+                    loadingOverlay.classList.remove('active');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                });
+            });
+
+            // Reset form styling on input
+            productForm.addEventListener('input', function(e) {
+                if (e.target.checkValidity()) {
+                    e.target.style.borderColor = '';
+                    e.target.style.boxShadow = '';
+                }
+            });
+
+            // Price validation - ensure positive number
+            const priceInput = document.getElementById('price');
+            priceInput.addEventListener('blur', function() {
+                if (this.value < 0) {
+                    this.value = 0;
+                }
+                this.value = parseFloat(this.value).toFixed(2);
+            });
+
+            // Stock quantity validation - ensure positive integer
+            const stockInput = document.getElementById('stockQuantity');
+            stockInput.addEventListener('blur', function() {
+                if (this.value < 0) {
+                    this.value = 0;
+                }
+                this.value = Math.floor(this.value);
+            });
+
+            // Animate form on load
+            const formContainer = document.querySelector('.form-container');
+            formContainer.style.animation = 'fade-in 0.5s ease';
+            
+             const featuredCheckbox = document.getElementById('featured');
+            featuredCheckbox.addEventListener('change', () => {
+                if(featuredCheckbox.checked){
+                    console.log("This product is marked as Featured!");
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>

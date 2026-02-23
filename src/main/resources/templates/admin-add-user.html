@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New User - TechSphere Admin</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ===== Base & Variables ===== */
+        :root {
+            --tech-blue: #0a1d37;
+            --neon-cyan: #00f3ff;
+            --neon-purple: #b967ff;
+            --electric-blue: #4361ee;
+            --dark-space: #060c21;
+            --cyber-green: #00ff9d;
+            --glow-yellow: #ffcc00;
+            --matrix-green: #00ff41;
+            --light-gray: #e2e8f0;
+            --dark-gray: #1a1a2e;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--dark-space);
+            color: white;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 243, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(185, 103, 255, 0.03) 0%, transparent 50%);
+        }
+
+        /* ===== Admin Container ===== */
+        .admin-container {
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ===== Header ===== */
+        .admin-header {
+            background: linear-gradient(135deg, 
+                rgba(10, 29, 55, 0.9), 
+                rgba(6, 12, 33, 0.9));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 20px;
+            padding: 25px 30px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .admin-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--neon-cyan), 
+                var(--neon-purple), 
+                transparent);
+            animation: scan-line 4s linear infinite;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
+        }
+
+        .title-text h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 800;
+        }
+
+        .title-text p {
+            color: var(--light-gray);
+            font-size: 0.95rem;
+            margin-top: 5px;
+        }
+
+        /* ===== Action Bar ===== */
+        .action-bar {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .admin-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--neon-cyan), var(--electric-blue));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 243, 255, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+        }
+
+        .btn-outline:hover {
+            background: rgba(0, 243, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* ===== Form Container ===== */
+        .form-container {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.05), 
+                rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 243, 255, 0.15);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-container:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                0 0 30px rgba(0, 243, 255, 0.2);
+        }
+
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-header h2 {
+            font-size: 1.5rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-header-icon {
+            color: var(--neon-cyan);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 15px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: rgba(0, 255, 157, 0.2);
+            color: var(--cyber-green);
+            border: 1px solid rgba(0, 255, 157, 0.3);
+        }
+
+        .status-inactive {
+            background: rgba(255, 71, 87, 0.2);
+            color: #ff4757;
+            border: 1px solid rgba(255, 71, 87, 0.3);
+        }
+
+        /* ===== Form Sections ===== */
+        .form-section {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            color: var(--neon-cyan);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            font-size: 1.1rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        /* ===== Form Elements ===== */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--light-gray);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .required-field::after {
+            content: " *";
+            color: #ff4757;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+        }
+
+        .input-group .form-input {
+            padding-right: 50px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: var(--neon-cyan);
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            transition: var(--transition);
+        }
+
+        .toggle-password:hover {
+            background: rgba(0, 243, 255, 0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            transition: var(--transition);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2300f3ff'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+
+        .form-text {
+            font-size: 0.85rem;
+            color: var(--light-gray);
+            margin-top: 5px;
+            padding-left: 5px;
+        }
+
+        /* ===== Radio & Checkbox Styles ===== */
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .radio-input {
+            display: none;
+        }
+
+        .radio-custom {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .radio-input:checked + .radio-custom {
+            border-color: var(--neon-cyan);
+        }
+
+        .radio-input:checked + .radio-custom::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        /* ===== System Info Section ===== */
+        .system-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .system-info-item {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(0, 243, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .system-info-label {
+            font-size: 0.85rem;
+            color: var(--light-gray);
+            margin-bottom: 5px;
+        }
+
+        .system-info-value {
+            color: white;
+            font-weight: 500;
+        }
+
+        /* ===== Form Actions ===== */
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-reset {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--light-gray);
+        }
+
+        .btn-reset:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* ===== Help Section ===== */
+        .help-section {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.05), 
+                rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 243, 255, 0.15);
+            border-radius: 20px;
+            padding: 25px;
+        }
+
+        .help-title {
+            font-size: 1.2rem;
+            color: var(--neon-cyan);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .help-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .help-column h6 {
+            font-size: 1rem;
+            color: white;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .help-column ul {
+            list-style: none;
+        }
+
+        .help-column li {
+            margin-bottom: 10px;
+            color: var(--light-gray);
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .help-column i {
+            color: var(--neon-cyan);
+            flex-shrink: 0;
+            margin-top: 3px;
+        }
+
+        /* ===== Animations ===== */
+        @keyframes scan-line {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== Responsive Design ===== */
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 15px;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .action-bar {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .form-actions > * {
+                width: 100%;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .admin-header {
+                padding: 20px;
+            }
+            
+            .page-title {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .system-info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .help-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-content">
+                <div class="page-title">
+                    <div class="page-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div class="title-text">
+                        <h1>Add New User</h1>
+                        <p>Create a new user account for TechSphere</p>
+                    </div>
+                </div>
+                
+                <div class="action-bar">
+                    <a th:href="@{/admin/users}" class="admin-btn btn-outline">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Users
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Add User Form -->
+        <div class="form-container">
+            <div class="form-header">
+                <h2><i class="fas fa-user-plus form-header-icon"></i>Create New User Account</h2>
+                <div>
+                    <span class="status-badge status-active">Active</span>
+                </div>
+            </div>
+            
+            <form th:action="@{/admin/users/add}" th:object="${user}" method="post" id="addUserForm">
+                <!-- Basic Information -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-id-card"></i>Basic Information
+                    </h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="name" class="form-label required-field">Full Name</label>
+                            <input type="text" 
+                                   class="form-input" 
+                                   id="name" 
+                                   th:field="*{name}" 
+                                   placeholder="Enter user's full name" 
+                                   required>
+                            <div class="form-text">Enter the user's full name as it should appear in the system</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email" class="form-label required-field">Email Address</label>
+                            <input type="email" 
+                                   class="form-input" 
+                                   id="email" 
+                                   th:field="*{email}" 
+                                   placeholder="Enter email address" 
+                                   required>
+                            <div class="form-text">This will be used for login and notifications</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Account Security -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-lock"></i>Account Security
+                    </h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="password" class="form-label required-field">Password</label>
+                            <div class="input-group">
+                                <input type="password" 
+                                       class="form-input" 
+                                       id="password" 
+                                       th:field="*{password}" 
+                                       placeholder="Create a secure password" 
+                                       required
+                                       minlength="8">
+                                <button type="button" class="toggle-password" data-target="password">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="form-text">Minimum 8 characters with letters and numbers</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="confirmPassword" class="form-label required-field">Confirm Password</label>
+                            <div class="input-group">
+                                <input type="password" 
+                                       class="form-input" 
+                                       id="confirmPassword" 
+                                       placeholder="Confirm the password" 
+                                       required
+                                       minlength="8">
+                                <button type="button" class="toggle-password" data-target="confirmPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="form-text">Re-enter the password to confirm</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Account Settings -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-cog"></i>Account Settings
+                    </h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="role" class="form-label required-field">User Role</label>
+                            <select class="form-select" id="role" th:field="*{role}" required>
+                                <option value="CUSTOMER" th:selected="${user.role.name() == 'CUSTOMER'}" selected>User (Regular Customer)</option>
+                                <option value="ADMIN" th:selected="${user.role.name() == 'ADMIN'}">Administrator (Full Access)</option>
+                                <option value="VENDOR" th:selected="${user.role.name() == 'VENDOR'}">Vendor(Old product seller)</option>
+                            </select>
+                            <div class="form-text">Admins have full system access, Users have limited access</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Account Status</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" 
+                                           class="radio-input" 
+                                           name="enabled" 
+                                           th:field="*{enabled}" 
+                                           th:value="true" 
+                                           checked>
+                                    <span class="radio-custom"></span>
+                                    <span class="status-badge status-active">Active</span>
+                                </label>
+                                
+                                <label class="radio-option">
+                                    <input type="radio" 
+                                           class="radio-input" 
+                                           name="enabled" 
+                                           th:field="*{enabled}" 
+                                           th:value="false">
+                                    <span class="radio-custom"></span>
+                                    <span class="status-badge status-inactive">Inactive</span>
+                                </label>
+                            </div>
+                            <div class="form-text">Inactive accounts cannot log in to the system</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- System Information -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-server"></i>System Information
+                    </h3>
+                    
+                    <div class="system-info-grid">
+                        <div class="system-info-item">
+                            <div class="system-info-label">User ID</div>
+                            <div class="system-info-value">Auto-generated</div>
+                        </div>
+                        
+                        <div class="system-info-item">
+                            <div class="system-info-label">Created Date</div>
+                            <div class="system-info-value" th:text="${#temporals.format(#temporals.createNow(), 'dd MMM yyyy HH:mm')}">Now</div>
+                        </div>
+                        
+                        <div class="system-info-item">
+                            <div class="system-info-label">Last Login</div>
+                            <div class="system-info-value">Never (New User)</div>
+                        </div>
+                        
+                        <div class="system-info-item">
+                            <div class="system-info-label">Cart & Orders</div>
+                            <div class="system-info-value">Auto-generated</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <div>
+                        <a th:href="@{/admin/users}" class="admin-btn btn-secondary">
+                            <i class="fas fa-times"></i>
+                            Cancel
+                        </a>
+                    </div>
+                    
+                    <div class="form-actions-right">
+                        <button type="reset" class="admin-btn btn-reset">
+                            <i class="fas fa-redo"></i>
+                            Reset Form
+                        </button>
+                        <button type="submit" class="admin-btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Create User Account
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Help Section -->
+        <div class="help-section">
+            <h3 class="help-title">
+                <i class="fas fa-question-circle"></i>Creating User Accounts
+            </h3>
+            
+            <div class="help-grid">
+                <div class="help-column">
+                    <h6><i class="fas fa-lightbulb"></i>Best Practices</h6>
+                    <ul>
+                        <li><i class="fas fa-check"></i>Use strong, unique passwords</li>
+                        <li><i class="fas fa-check"></i>Verify email addresses are correct</li>
+                        <li><i class="fas fa-check"></i>Assign appropriate roles based on user needs</li>
+                        <li><i class="fas fa-check"></i>Send welcome email to new users</li>
+                    </ul>
+                </div>
+                
+                <div class="help-column">
+                    <h6><i class="fas fa-exclamation-triangle"></i>Important Notes</h6>
+                    <ul>
+                        <li><i class="fas fa-info"></i>Users will receive a welcome email</li>
+                        <li><i class="fas fa-info"></i>Inactive users cannot log in</li>
+                        <li><i class="fas fa-info"></i>Cart and order history are created automatically</li>
+                        <li><i class="fas fa-info"></i>Last login updates on first login</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle password visibility
+            const toggleButtons = document.querySelectorAll('.toggle-password');
+            toggleButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetId = this.getAttribute('data-target');
+                    const passwordInput = document.getElementById(targetId);
+                    const icon = this.querySelector('i');
+                    
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    } else {
+                        passwordInput.type = 'password';
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
+                });
+            });
+            
+            // Password confirmation validation
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            
+            function validatePassword() {
+                if (passwordInput.value !== confirmPasswordInput.value) {
+                    confirmPasswordInput.setCustomValidity('Passwords do not match');
+                    confirmPasswordInput.style.borderColor = '#ff4757';
+                    confirmPasswordInput.style.boxShadow = '0 0 10px rgba(255, 71, 87, 0.3)';
+                } else {
+                    confirmPasswordInput.setCustomValidity('');
+                    confirmPasswordInput.style.borderColor = '';
+                    confirmPasswordInput.style.boxShadow = '';
+                }
+            }
+            
+            passwordInput.addEventListener('input', validatePassword);
+            confirmPasswordInput.addEventListener('input', validatePassword);
+            
+            // Form submission handling
+            const form = document.getElementById('addUserForm');
+            form.addEventListener('submit', function(event) {
+                // Validate password match
+                validatePassword();
+                
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    
+                    // Add visual feedback for invalid fields
+                    const invalidFields = form.querySelectorAll(':invalid');
+                    invalidFields.forEach(field => {
+                        field.style.borderColor = '#ff4757';
+                        field.style.boxShadow = '0 0 10px rgba(255, 71, 87, 0.3)';
+                    });
+                } else {
+                    // Show success feedback
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating User...';
+                    submitBtn.disabled = true;
+                    
+                    // Reset button state after 3 seconds (in case form takes longer)
+                    setTimeout(() => {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    }, 3000);
+                }
+            });
+            
+            // Reset form styling on input
+            form.addEventListener('input', function(e) {
+                if (e.target.checkValidity()) {
+                    e.target.style.borderColor = '';
+                    e.target.style.boxShadow = '';
+                }
+            });
+            
+            // Animate form on load
+            const formContainer = document.querySelector('.form-container');
+            formContainer.style.animation = 'fade-in 0.5s ease';
+        });
+    </script>
+</body>
+</html>
