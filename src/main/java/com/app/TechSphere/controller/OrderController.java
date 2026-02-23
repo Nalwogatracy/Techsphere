@@ -47,12 +47,22 @@ public class OrderController {
         double totalSpent = orders.stream()
                                   .mapToDouble(Order::getTotalAmount)
                                   .sum();
+        
+        for (Order order : orders) {
+            double paid = order.getPaidAmount() != null ? order.getPaidAmount() : 0;  // default to 0 if null
+            double progress = order.getTotalAmount() != 0 
+                ? (paid / order.getTotalAmount()) * 100 
+                : 0;
+            order.setPaymentProgress(progress);
+        }
+        model.addAttribute("orders", orders);
 
         model.addAttribute("totalOrders", totalOrders);
         model.addAttribute("pendingCount", pendingCount);
         model.addAttribute("deliveredCount", deliveredCount);
         model.addAttribute("totalSpent", totalSpent);
-
+        
+        
         return "orders"; // Thymeleaf page: orders.html
     }
 

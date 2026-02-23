@@ -174,7 +174,7 @@
         /* ===== Users Grid ===== */
         .users-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
             gap: 25px;
             margin-bottom: 30px;
         }
@@ -242,6 +242,7 @@
             display: flex;
             align-items: center;
             gap: 5px;
+            margin-bottom: 4px;
         }
 
         .user-role {
@@ -286,6 +287,12 @@
             border: 1px solid rgba(0, 243, 255, 0.1);
         }
 
+        .detail-item i {
+            color: var(--neon-cyan);
+            margin-right: 8px;
+            width: 20px;
+        }
+
         .detail-label {
             color: var(--light-gray);
             font-size: 0.85rem;
@@ -298,11 +305,59 @@
             font-weight: 500;
         }
 
+        /* Contact Info Styling */
+        .contact-info {
+            margin-top: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 243, 255, 0.1);
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+        }
+
+        .contact-item:not(:last-child) {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .contact-item i {
+            width: 24px;
+            color: var(--neon-cyan);
+            font-size: 1.1rem;
+        }
+
+        .contact-label {
+            color: var(--light-gray);
+            font-size: 0.9rem;
+            min-width: 80px;
+        }
+
+        .contact-value {
+            color: white;
+            font-weight: 500;
+            word-break: break-word;
+        }
+
+        .phone-number {
+            color: var(--cyber-green);
+        }
+
+        .district {
+            color: var(--neon-purple);
+        }
+
         /* ===== Action Buttons ===== */
         .user-actions {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+            margin-top: 15px;
         }
 
         .action-btn {
@@ -481,6 +536,29 @@
             box-shadow: 0 10px 25px rgba(0, 243, 255, 0.3);
         }
 
+        /* ===== Tooltip ===== */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark-space);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            border: 1px solid var(--neon-cyan);
+            margin-bottom: 5px;
+            z-index: 1000;
+        }
+
         /* ===== Animations ===== */
         @keyframes scan-line {
             0% { transform: translateX(-100%); }
@@ -605,7 +683,7 @@
             <div class="search-box">
                 <input type="text" 
                        class="search-input" 
-                       placeholder="Search users by name, email, or role..."
+                       placeholder="Search users by name, email, phone, location, or role..."
                        id="userSearch">
                 <button class="search-btn">
                     <i class="fas fa-search"></i>
@@ -640,53 +718,83 @@
                                 <span th:text="${user.enabled ? 'Active' : 'Inactive'}">Active</span>
                             </span>
                         </div>
-
+                    </div>
+                </div>
+                
+                <!-- Contact Information Section (NEW) -->
+                <div class="contact-info">
+                    <!-- Phone Number -->
+                    <div class="contact-item">
+                        <i class="fas fa-phone-alt"></i>
+                        <span class="contact-label">Phone:</span>
+                        <span class="contact-value phone-number" th:text="${user.phone != null ? user.phone : 'Not provided'}">
+                            +256 700 123456
+                        </span>
+                    </div>
+                    
+                    <!-- Location/District -->
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span class="contact-label">Location:</span>
+                        <span class="contact-value district" th:text="${user.district != null ? user.district : 'Not specified'}">
+                            Kampala
+                        </span>
                     </div>
                 </div>
                 
                 <div class="user-details">
                     <div class="detail-item">
-                        <div class="detail-label">Account Created</div>
+                        <div class="detail-label">
+                            <i class="far fa-calendar-alt"></i> Account Created
+                        </div>
                         <div class="detail-value" th:text="${#temporals.format(user.createdAt, 'dd MMM yyyy')}">01 Jan 2024</div>
                     </div>
                     <div class="detail-item">
-                        <div class="detail-label">Last Login</div>
+                        <div class="detail-label">
+                            <i class="fas fa-history"></i> Last Login
+                        </div>
                         <div class="detail-value" th:text="${user.lastLogin != null ? #temporals.format(user.lastLogin, 'dd MMM yyyy HH:mm') : 'Never'}">Today</div>
                     </div>
                     <div class="detail-item">
-                        <div class="detail-label">User ID</div>
+                        <div class="detail-label">
+                            <i class="fas fa-id-card"></i> User ID
+                        </div>
                         <div class="detail-value" th:text="${user.id}">#001</div>
                     </div>
                     <div class="detail-item">
-                        <div class="detail-label">Orders</div>
+                        <div class="detail-label">
+                            <i class="fas fa-shopping-bag"></i> Orders
+                        </div>
                         <div class="detail-value" th:text="${user.orders != null ? user.orders.size() : 0}">0</div>
                     </div>
                 </div>
                 
                 <div class="user-actions">
+                    <!-- Promote/Demote to Admin -->
                     <form th:action="@{/admin/users/update-role}" method="post" style="flex: 1;">
                         <input type="hidden" name="userId" th:value="${user.id}" />
-                        <!-- Toggle Admin role -->
                         <input type="hidden" name="role"
                                th:value="${user.role.name() == 'ADMIN' ? 'CUSTOMER' : 'ADMIN'}" />
                         <button type="submit" 
                                 th:classappend="${user.role.name() == 'ADMIN' ? 'action-btn btn-demote' : 'action-btn btn-promote'}">
                             <i th:classappend="${user.role.name() == 'ADMIN' ? 'fas fa-user-minus' : 'fas fa-user-shield'}"></i>
-                            <span th:text="${user.role.name() == 'ADMIN' ? 'Demote to Customer' : 'Promote to Admin'}"></span>
-                        </button>
-                    </form>
-                    <form th:action="@{/admin/users/update-role}" method="post" style="flex: 1; margin-left: 8px;">
-                        <input type="hidden" name="userId" th:value="${user.id}" />
-                        <!-- Toggle Vendor role -->
-                        <input type="hidden" name="role"
-                               th:value="${user.role.name() == 'CUSTOMER' ? 'VENDOR' : 'CUSTOMER'}" />
-                        <button type="submit" 
-                                th:classappend="${user.role.name() == 'VENDOR' ? 'action-btn btn-demote' : 'action-btn btn-promote'}">
-                            <i th:classappend="${user.role.name() == 'VENDOR' ? 'fas fa-user-minus' : 'fas fa-user-plus'}"></i>
-                            <span th:text="${user.role.name() == 'VENDOR' ? 'Demote to Customer' : 'Promote to Vendor'}"></span>
+                            <span th:text="${user.role.name() == 'ADMIN' ? 'Demote' : 'Promote Admin'}"></span>
                         </button>
                     </form>
                     
+                    <!-- Promote/Demote to Vendor -->
+                    <form th:action="@{/admin/users/update-role}" method="post" style="flex: 1; margin-left: 8px;">
+                        <input type="hidden" name="userId" th:value="${user.id}" />
+                        <input type="hidden" name="role"
+                               th:value="${user.role.name() == 'VENDOR' ? 'CUSTOMER' : 'VENDOR'}" />
+                        <button type="submit" 
+                                th:classappend="${user.role.name() == 'VENDOR' ? 'action-btn btn-demote' : 'action-btn btn-promote'}">
+                            <i th:classappend="${user.role.name() == 'VENDOR' ? 'fas fa-user-minus' : 'fas fa-user-plus'}"></i>
+                            <span th:text="${user.role.name() == 'VENDOR' ? 'Demote' : 'Promote Vendor'}"></span>
+                        </button>
+                    </form>
+                    
+                    <!-- Delete User -->
                     <form th:action="@{/admin/users/delete}" method="post" style="flex: 1;">
                         <input type="hidden" name="userId" th:value="${user.id}">
                         <button type="submit" 
@@ -734,7 +842,7 @@
             const userAvatars = document.querySelectorAll('.user-avatar.has-initials');
             
             userAvatars.forEach(avatar => {
-                // Get the name from the h3 element (sibling of parent)
+                // Get the name from the h3 element
                 const userCard = avatar.closest('.user-card');
                 const userNameElement = userCard.querySelector('.user-info h3');
                 const userName = userNameElement ? userNameElement.textContent.trim() : '';
@@ -757,7 +865,7 @@
             });
         }
 
-        // Search functionality
+        // Search functionality (updated to include phone and district)
         document.getElementById('userSearch').addEventListener('input', function(e) {
             const searchTerm = e.target.value.toLowerCase();
             const userCards = document.querySelectorAll('.user-card');
@@ -767,9 +875,18 @@
                 const email = card.querySelector('.user-info p span').textContent.toLowerCase();
                 const role = card.querySelector('.user-role').textContent.toLowerCase();
                 
+                // Get phone and district for search (NEW)
+                const phoneElement = card.querySelector('.contact-value.phone-number');
+                const districtElement = card.querySelector('.contact-value.district');
+                const phone = phoneElement ? phoneElement.textContent.toLowerCase() : '';
+                const district = districtElement ? districtElement.textContent.toLowerCase() : '';
+                
                 if (name.includes(searchTerm) || 
                     email.includes(searchTerm) || 
-                    role.includes(searchTerm)) {
+                    role.includes(searchTerm) ||
+                    phone.includes(searchTerm) ||      // NEW: search by phone
+                    district.includes(searchTerm)) {   // NEW: search by district
+                    
                     card.style.display = 'block';
                     card.style.animation = 'fade-in 0.3s ease';
                 } else {
@@ -800,13 +917,16 @@
             });
         });
 
-        // Optional: Refresh initials if content changes dynamically
-        function refreshUserAvatars() {
-            applyUserInitials();
+        // Optional: Format phone numbers if needed
+        function formatPhoneNumber(phone) {
+            if (!phone) return 'Not provided';
+            // Add your phone formatting logic here if needed
+            return phone;
         }
 
-        // Make function available globally if needed
-        window.refreshUserAvatars = refreshUserAvatars;
+        // Make functions available globally if needed
+        window.refreshUserAvatars = applyUserInitials;
+        window.formatPhoneNumber = formatPhoneNumber;
     </script>
 </body>
 </html>

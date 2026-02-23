@@ -36,6 +36,7 @@
             --secondary: #7c4dff;
             --accent: #ffd600;
             --success: #00c853;
+            --error: #ff5252;
             --gradient-1: linear-gradient(135deg, #00e5ff, #7c4dff);
             --gradient-2: linear-gradient(45deg, #ffd600, #ff6e40);
             
@@ -1278,7 +1279,7 @@
             box-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
         }
 
-        /* ===== MODAL ===== */
+        /* ===== MODAL STYLES ===== */
         .modal {
             position: fixed;
             top: 0;
@@ -1287,18 +1288,14 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.9);
             backdrop-filter: blur(10px);
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: 0.3s;
             z-index: 2000;
         }
 
         .modal.show {
-            opacity: 1;
-            visibility: visible;
+            display: flex;
         }
 
         .modal-content {
@@ -1310,6 +1307,8 @@
             position: relative;
             border: 1px solid var(--primary);
             box-shadow: 0 20px 60px rgba(0, 229, 255, 0.3);
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .modal-close {
@@ -1333,6 +1332,213 @@
             border-color: var(--primary);
             color: var(--primary);
             transform: rotate(90deg);
+        }
+
+        /* Registration Form Styles */
+        .registration-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .registration-header i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .registration-header h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .registration-header p {
+            color: var(--text-secondary);
+        }
+
+        .registration-form {
+            width: 100%;
+        }
+
+        .form-field {
+            margin-bottom: 20px;
+        }
+
+        .form-field label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .form-field label i {
+            color: var(--primary);
+            margin-right: 8px;
+            width: 20px;
+        }
+
+        .form-field input,
+        .form-field select {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-field input:focus,
+        .form-field select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.1);
+        }
+
+        .form-field input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .password-hint {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        .terms-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 25px 0;
+        }
+
+        .terms-checkbox input {
+            width: auto;
+        }
+
+        .terms-checkbox label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .terms-checkbox a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .terms-checkbox a:hover {
+            text-decoration: underline;
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--gradient-1);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px var(--primary);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .login-link p {
+            color: var(--text-secondary);
+        }
+
+        .login-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Error/Success Messages */
+        .error-message {
+            background: rgba(255, 82, 82, 0.1);
+            border: 1px solid rgba(255, 82, 82, 0.3);
+            color: #ff5252;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .success-message {
+            background: rgba(0, 200, 83, 0.1);
+            border: 1px solid rgba(0, 200, 83, 0.3);
+            color: #00c853;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ===== QUICK VIEW MODAL STYLES ===== */
+        .quick-view-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .quick-view-image img {
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid var(--primary);
+        }
+
+        .quick-view-details h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 2rem;
+        }
+
+        .quick-view-details p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+
+        .quick-view-price-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .quick-view-price-label {
+            color: var(--text-secondary);
+        }
+
+        .quick-view-price-value {
+            color: var(--primary);
+            font-size: 2rem;
+            font-weight: bold;
         }
 
         /* ===== TOAST ===== */
@@ -1420,6 +1626,15 @@
 
             .gallery-nav.prev { left: 10px; }
             .gallery-nav.next { right: 10px; }
+
+            .modal-content {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+
+            .quick-view-content {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -1520,7 +1735,7 @@
                             <div class="ring ring-3"></div>
                             <div class="ring ring-4"></div>
                             
-                            <!-- Center Image (NEW IMAGE) -->
+                            <!-- Center Image -->
                             <div class="tech-image-wrapper">
                                 <img src="https://images.unsplash.com/photo-1617396900799-f4ec2b43c7ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
                                      alt="Future Technology" 
@@ -1640,7 +1855,11 @@
                                     <i class="far fa-heart"></i>
                                 </button>
                                 <button class="product-action-btn quick-view-btn" 
-                                        th:attr="data-product-id=${product.id}">
+                                        th:attr="data-product-id=${product.id},
+                                                 data-product-name=${product.name},
+                                                 data-product-description=${product.description},
+                                                 data-product-price=${product.price},
+                                                 data-product-image=${product.images != null && !#lists.isEmpty(product.images) ? product.images[0].imageUrl : ''}">
                                     <i class="fas fa-eye"></i>
                                 </button>
                                 <button th:if="${not #lists.isEmpty(product.images)}"
@@ -1658,7 +1877,6 @@
                             
                             <div class="product-footer">
                                 <div class="product-price">
-                                    <!-- CHANGED: From USD to Ush (Ugandan Shillings) -->
                                     <span class="price-current" th:text="'Ush ' + ${#numbers.formatDecimal(product.price, 1, 2)}">Ush 0.00</span>
                                 </div>
                             </div>
@@ -1764,24 +1982,128 @@
                 <button class="modal-close" onclick="closeRegistrationModal()">
                     <i class="fas fa-times"></i>
                 </button>
-                <div style="text-align: center;">
-                    <div style="width: 80px; height: 80px; background: var(--gradient-1); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
-                        <i class="fas fa-user-astronaut" style="font-size: 2.5rem; color: white;"></i>
-                    </div>
-                    <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Join TechSphere</h2>
-                    <p style="color: var(--text-secondary);">Create your account and explore the future</p>
+                
+                <div class="registration-header">
+                    <i class="fas fa-user-astronaut"></i>
+                    <h2>Join TechSphere</h2>
+                    <p>Create your account and explore the future</p>
                 </div>
-                <!-- Your registration form here -->
+
+                <!-- Registration Form - Modified to work with your controller -->
+                <form action="/user/register" method="post" class="registration-form">
+                    <!-- Full Name Field -->
+                    <div class="form-field">
+                        <label for="fullName">
+                            <i class="fas fa-user"></i>
+                            Full Name
+                        </label>
+                        <input type="text" id="fullName" name="fullName" required 
+                               placeholder="Enter your full name">
+                    </div>
+
+                    <!-- Email Field -->
+                    <div class="form-field">
+                        <label for="email">
+                            <i class="fas fa-envelope"></i>
+                            Email Address
+                        </label>
+                        <input type="email" id="email" name="email" required 
+                               placeholder="Enter your email">
+                    </div>
+
+                    <!-- Phone Number Field -->
+                    <div class="form-field">
+                        <label for="phone">
+                            <i class="fas fa-phone"></i>
+                            Phone Number
+                        </label>
+                        <input type="tel" id="phone" name="phone" required 
+                               placeholder="e.g., 0700123456 or +256700123456">
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="form-field">
+                        <label for="password">
+                            <i class="fas fa-lock"></i>
+                            Password
+                        </label>
+                        <input type="password" id="password" name="password" required 
+                               placeholder="Create a password" minlength="6">
+                        <small class="password-hint">Minimum 6 characters</small>
+                    </div>
+
+                    <!-- Confirm Password Field (for frontend validation only) -->
+                    <div class="form-field">
+                        <label for="confirmPassword">
+                            <i class="fas fa-lock"></i>
+                            Confirm Password
+                        </label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required 
+                               placeholder="Re-enter your password" oninput="validatePasswordMatch()">
+                        <small id="passwordMatchError" style="color: var(--error); display: none;">Passwords do not match!</small>
+                    </div>
+
+                    <!-- District Field -->
+                    <div class="form-field">
+                        <label for="district">
+                            <i class="fas fa-map-marker-alt"></i>
+                            District
+                        </label>
+                        <select id="district" name="district" required>
+                            <option value="">Select your district</option>
+                            <option value="Kampala">Kampala</option>
+                            <option value="Wakiso">Wakiso</option>
+                            <option value="Mukono">Mukono</option>
+                            <option value="Gulu">Gulu</option>
+                            <option value="Mbarara">Mbarara</option>
+                            <option value="Jinja">Jinja</option>
+                            <option value="Mbale">Mbale</option>
+                            <option value="Lira">Lira</option>
+                            <option value="Arua">Arua</option>
+                            <option value="Fort Portal">Fort Portal</option>
+                            <option value="Masaka">Masaka</option>
+                            <option value="Soroti">Soroti</option>
+                            <option value="Kabale">Kabale</option>
+                            <option value="Busia">Busia</option>
+                        </select>
+                    </div>
+
+                    <!-- Terms and Conditions -->
+                    <div class="terms-checkbox">
+                        <input type="checkbox" id="terms" name="terms" required>
+                        <label for="terms">
+                            I agree to the <a href="#">Terms of Service</a> and 
+                            <a href="#">Privacy Policy</a>
+                        </label>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="register-btn" id="registerBtn">
+                        <i class="fas fa-user-plus"></i>
+                        Create Account
+                    </button>
+
+                    <!-- Login Link -->
+                    <div class="login-link">
+                        <p>Already have an account? 
+                            <a href="/user/login">
+                                Sign In
+                            </a>
+                        </p>
+                    </div>
+                </form>
             </div>
         </div>
 
-        <!-- Quick View Modal -->
+        <!-- Quick View Modal - FIXED VERSION -->
         <div id="quickViewModal" class="modal">
-            <div class="modal-content">
+            <div class="modal-content" style="max-width: 900px;">
                 <button class="modal-close" onclick="closeQuickView()">
                     <i class="fas fa-times"></i>
                 </button>
-                <div id="quickViewContent"></div>
+                <div id="quickViewContent" class="quick-view-content">
+                    <!-- Content will be populated by JavaScript -->
+                </div>
             </div>
         </div>
     </div>
@@ -1930,39 +2252,30 @@
             });
         });
 
-        // ===== QUICK VIEW =====
+        // ===== QUICK VIEW - FIXED VERSION =====
         document.querySelectorAll('.quick-view-btn').forEach(btn => {
             btn.addEventListener('click', function() {
-                const productId = this.dataset.productId;
-                const productCard = this.closest('.product-card');
-                
-                const productName = productCard.querySelector('.product-title').textContent;
-                const productDesc = productCard.querySelector('.product-description').textContent;
-                const productPrice = productCard.querySelector('.price-current').textContent;
-                const productImage = productCard.querySelector('.carousel-slide.active img')?.src || 
-                                    productCard.querySelector('.carousel-slide img')?.src ||
-                                    'https://via.placeholder.com/400x300/0a1d37/00f3ff?text=No+Image';
+                const productName = this.dataset.productName;
+                const productDesc = this.dataset.productDescription;
+                const productPrice = this.dataset.productPrice;
+                const productImage = this.dataset.productImage || 'https://via.placeholder.com/400x300/0a1d37/00f3ff?text=No+Image';
                 
                 const content = `
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-                        <div>
-                            <img src="${productImage}" alt="${productName}" 
-                                 style="width:100%; border-radius:10px; border: 1px solid var(--primary);">
-                        </div>
-                        <div>
-                            <h2 style="color: var(--primary); margin-bottom:15px; font-size: 2rem;">${productName}</h2>
-                            <p style="color: var(--text-secondary); margin-bottom:20px; line-height: 1.8;">${productDesc}</p>
-                            <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span style="color: var(--text-secondary);">Price:</span>
-                                    <!-- CHANGED: Display Ush in quick view -->
-                                    <span style="color: var(--primary); font-size: 2rem; font-weight: bold;">${productPrice}</span>
-                                </div>
+                    <div class="quick-view-image">
+                        <img src="${productImage}" alt="${productName}">
+                    </div>
+                    <div class="quick-view-details">
+                        <h2>${productName}</h2>
+                        <p>${productDesc}</p>
+                        <div class="quick-view-price-box">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span class="quick-view-price-label">Price:</span>
+                                <span class="quick-view-price-value">Ush ${Number(productPrice).toFixed(2)}</span>
                             </div>
-                            <button class="btn btn-primary btn-block" onclick="addToCartFromQuickView('${productName}')">
-                                <i class="fas fa-cart-plus"></i> Add to Cart
-                            </button>
                         </div>
+                        <button class="btn btn-primary btn-block" onclick="addToCartFromQuickView('${productName}')">
+                            <i class="fas fa-cart-plus"></i> Add to Cart
+                        </button>
                     </div>
                 `;
                 
@@ -1974,6 +2287,10 @@
         function addToCartFromQuickView(productName) {
             showToast(productName + ' added to cart! 🛒', 'shopping-cart');
             closeQuickView();
+        }
+
+        function closeQuickView() {
+            document.getElementById('quickViewModal').classList.remove('show');
         }
 
         // ===== ADD TO CART AJAX =====
@@ -2041,34 +2358,34 @@
             });
         }, 5000);
 
-        // ===== MODAL FUNCTIONS =====
+        // ===== REGISTRATION MODAL FUNCTIONS =====
         function openRegistrationModal() {
             document.getElementById('registrationModal').classList.add('show');
+            document.body.style.overflow = 'hidden';
         }
 
         function closeRegistrationModal() {
             document.getElementById('registrationModal').classList.remove('show');
+            document.body.style.overflow = 'auto';
+            // Reset form
+            document.getElementById('registrationForm').reset();
         }
 
-        function closeQuickView() {
-            document.getElementById('quickViewModal').classList.remove('show');
+        // ===== PASSWORD VALIDATION =====
+        function validatePasswordMatch() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const errorSpan = document.getElementById('passwordMatchError');
+            const submitBtn = document.getElementById('registerBtn');
+            
+            if (password !== confirmPassword) {
+                errorSpan.style.display = 'block';
+                submitBtn.disabled = true;
+            } else {
+                errorSpan.style.display = 'none';
+                submitBtn.disabled = false;
+            }
         }
-
-        // Close modals on escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeGallery();
-                closeRegistrationModal();
-                closeQuickView();
-            }
-        });
-
-        // Close modals on outside click
-        window.addEventListener('click', function(e) {
-            if (e.target.classList.contains('modal') || e.target.classList.contains('gallery-modal')) {
-                e.target.classList.remove('show');
-            }
-        });
 
         // ===== NEWSLETTER FORM =====
         document.getElementById('newsletterForm')?.addEventListener('submit', function(e) {
@@ -2094,6 +2411,26 @@
                 }, 33);
             });
         }
+
+        // ===== CLOSE MODALS ON OUTSIDE CLICK =====
+        window.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('show');
+                document.body.style.overflow = 'auto';
+            }
+            if (e.target.classList.contains('gallery-modal') && e.target.classList.contains('show')) {
+                e.target.classList.remove('show');
+            }
+        });
+
+        // ===== CLOSE MODALS ON ESCAPE KEY =====
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeGallery();
+                closeRegistrationModal();
+                closeQuickView();
+            }
+        });
 
         // ===== INITIALIZE =====
         document.addEventListener('DOMContentLoaded', function() {

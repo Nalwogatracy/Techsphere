@@ -37,6 +37,11 @@
             --status-shipped: #b967ff;
             --status-delivered: #00ff9d;
             --status-cancelled: #ff4757;
+            
+            /* Deposit Colors */
+            --deposit-pending: #ffcc00;
+            --deposit-paid: #00ff9d;
+            --deposit-partial: #b967ff;
         }
 
         * {
@@ -329,7 +334,7 @@
         .orders-table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 1000px;
+            min-width: 1200px; /* Increased to accommodate new columns */
         }
 
         .orders-table th {
@@ -381,6 +386,29 @@
             opacity: 0.8;
         }
 
+        .customer-contact {
+            font-size: 0.85rem;
+            color: var(--cyber-green);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 4px;
+        }
+
+        .customer-location {
+            font-size: 0.85rem;
+            color: var(--neon-purple);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 4px;
+        }
+
+        .contact-icon {
+            width: 16px;
+            color: var(--neon-cyan);
+        }
+
         /* Status Badges */
         .status-badge {
             padding: 6px 12px;
@@ -427,6 +455,58 @@
             box-shadow: 0 0 10px rgba(255, 71, 87, 0.3);
         }
 
+        /* Deposit Badges */
+        .deposit-badge {
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-align: center;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        .deposit-pending {
+            background: rgba(255, 204, 0, 0.15);
+            border: 1px solid var(--deposit-pending);
+            color: var(--deposit-pending);
+        }
+
+        .deposit-paid {
+            background: rgba(0, 255, 157, 0.15);
+            border: 1px solid var(--deposit-paid);
+            color: var(--deposit-paid);
+        }
+
+        .deposit-partial {
+            background: rgba(185, 103, 255, 0.15);
+            border: 1px solid var(--deposit-partial);
+            color: var(--deposit-partial);
+        }
+
+        .deposit-amount {
+            font-size: 0.9rem;
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Deposit Progress Bar */
+        .deposit-progress {
+            width: 100px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin: 5px 0;
+            overflow: hidden;
+        }
+
+        .deposit-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--cyber-green));
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
         /* Status Select Dropdown */
         .status-select {
             background: rgba(0, 0, 0, 0.5);
@@ -448,6 +528,28 @@
         .status-select option {
             background: var(--dark-space);
             color: white;
+        }
+
+        /* Deposit Input */
+        .deposit-input {
+            width: 100px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: white;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .deposit-input:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+        }
+
+        .deposit-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
         }
 
         /* Action Buttons */
@@ -475,6 +577,26 @@
             border: none;
             color: white;
             padding: 8px 16px;
+        }
+
+        .deposit-btn {
+            background: linear-gradient(135deg, var(--glow-yellow), var(--neon-cyan));
+            border: none;
+            color: var(--dark-space);
+            font-weight: 600;
+        }
+
+        .whatsapp-btn {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            border: none;
+            color: white;
+        }
+
+        /* Button Group */
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         /* ===== Order Details Modal ===== */
@@ -568,6 +690,20 @@
             background: rgba(0, 0, 0, 0.3);
             border-radius: 8px;
             margin-bottom: 8px;
+        }
+
+        /* Deposit Section in Modal */
+        .deposit-section {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .deposit-section h3 {
+            color: var(--neon-cyan);
+            margin-bottom: 15px;
         }
 
         /* ===== Pagination ===== */
@@ -731,6 +867,10 @@
             .nav-pill {
                 padding: 10px 15px;
             }
+            
+            .btn-group {
+                flex-direction: column;
+            }
         }
 
         @media (max-width: 480px) {
@@ -839,7 +979,7 @@
             </div>
             
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Search by order ID, customer name, or email...">
+                <input type="text" id="searchInput" placeholder="Search by order ID, customer name, phone, or location...">
                 <button onclick="searchOrders()">
                     <i class="fas fa-search"></i>
                 </button>
@@ -853,9 +993,11 @@
                     <tr>
                         <th>Order ID</th>
                         <th>Customer</th>
+                        <th>Contact Info</th>
                         <th>Date</th>
                         <th>Items</th>
                         <th>Total</th>
+                        <th>Deposit</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -871,9 +1013,36 @@
                                 <span class="customer-email" th:text="${order.user.email}">john@example.com</span>
                             </div>
                         </td>
+                        <td>
+                            <div class="customer-contact">
+                                <i class="fas fa-phone-alt contact-icon"></i>
+                                <span th:text="${order.user.phone != null ? order.user.phone : 'No phone'}">+256 700 123456</span>
+                            </div>
+                            <div class="customer-location">
+                                <i class="fas fa-map-marker-alt contact-icon"></i>
+                                <span th:text="${order.user.district != null ? order.user.district : 'No location'}">Kampala</span>
+                            </div>
+                        </td>
                         <td th:text="${#temporals.format(order.createdAt, 'MMM dd, yyyy HH:mm')}">Jan 15, 2024 14:30</td>
                         <td th:text="${#lists.size(order.items)} + ' items'">3 items</td>
-                        <td th:text="'Ush' + ${#numbers.formatDecimal(order.totalAmount, 0, 0)}">$99.99</td>
+                        <td th:text="'Ush ' + ${#numbers.formatDecimal(order.totalAmount, 0, 0)}">Ush 99,000</td>
+                        <td>
+                            <div style="display: flex; flex-direction: column; gap: 5px;">
+                                <span class="deposit-amount" th:text="'Ush ' + ${#numbers.formatDecimal(order.depositAmount, 0, 0)}">Ush 30,000</span>
+                                <span th:class="'deposit-badge ' + 
+                                    ${order.depositAmount >= order.totalAmount ? 'deposit-paid' : 
+                                      order.depositAmount > 0 ? 'deposit-partial' : 'deposit-pending'}">
+                                    <i th:class="${order.depositAmount >= order.totalAmount ? 'fas fa-check-circle' : 
+                                                    order.depositAmount > 0 ? 'fas fa-hourglass-half' : 'fas fa-clock'}"></i>
+                                    <span th:text="${order.depositAmount >= order.totalAmount ? 'Paid' : 
+                                                    order.depositAmount > 0 ? 'Partial' : 'Pending'}">Pending</span>
+                                </span>
+                                <div class="deposit-progress" th:if="${order.totalAmount > 0}">
+                                    <div class="deposit-progress-bar" 
+                                         th:style="'width: ' + ${(order.depositAmount / order.totalAmount) * 100} + '%'"></div>
+                                </div>
+                            </div>
+                        </td>
                         <td>
                             <span th:class="'status-badge status-' + ${order.status.toString().toLowerCase()}" 
                                   th:text="${order.status}">
@@ -881,29 +1050,44 @@
                             </span>
                         </td>
                         <td>
-                            <button th:onclick="|viewOrderDetails(${order.id})|">
-                                View
-                            </button>
-
-                            
-                            <form th:action="@{'/orders/admin/' + ${order.id} + '/update'}" 
-                                    method="post" 
-                                    style="display: inline;">
-                                  <select name="status" class="status-select" 
-                                          onchange="this.form.submit()">
-                                      <option value="PENDING" 
-                                              th:selected="${order.status == T(com.app.TechSphere.model.Order.OrderStatus).PENDING}">Pending</option>
-                                      <option value="APPROVED" 
-                                              th:selected="${order.status == T(com.app.TechSphere.model.Order.OrderStatus).APPROVED}">Approved</option>
-                                      <option value="SHIPPED" 
-                                              th:selected="${order.status == T(com.app.TechSphere.model.Order.OrderStatus).SHIPPED}">Shipped</option>
-                                      <option value="DELIVERED" 
-                                              th:selected="${order.status == T(com.app.TechSphere.model.Order.OrderStatus).DELIVERED}">Delivered</option>
-                                      <option value="CANCELLED" 
-                                              th:selected="${order.status == T(com.app.TechSphere.model.Order.OrderStatus).CANCELLED}">Cancelled</option>
-                                  </select>
-                            </form>
-
+                            <div class="btn-group">
+                                <!-- View Details Button -->
+                                <button class="action-btn" th:onclick="|viewOrderDetails(${order.id})|" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                
+                                <!-- WhatsApp Message Button -->
+                                <a th:href="@{'https://wa.me/' + ${order.user.phone} + '?text=' + 
+                                           'Hello ' + ${order.user.name} + ', your order #' + ${order.id} + 
+                                           ' is currently ' + ${order.status} + 
+                                           '. Total: Ush ' + ${#numbers.formatDecimal(order.totalAmount, 0, 0)} + 
+                                           '. Deposit paid: Ush ' + ${#numbers.formatDecimal(order.depositAmount, 0, 0)} + 
+                                           '. Please contact us for more information.'}" 
+                                   target="_blank" 
+                                   class="action-btn whatsapp-btn" 
+                                   title="Send WhatsApp Message">
+                                    <i class="fab fa-whatsapp"></i>
+                                </a>
+                                
+                                <!-- Update Status Form -->
+                                <form th:action="@{'/orders/admin/' + ${order.id} + '/update'}" 
+                                      method="post" 
+                                      style="display: inline;">
+                                    <select name="status" class="status-select" 
+                                            onchange="this.form.submit()">
+                                        <option value="PENDING" 
+                                                th:selected="${order.status == T(com.app.TechSphere.model.Order.OrderStatus).PENDING}">Pending</option>
+                                        <option value="APPROVED" 
+                                                th:selected="${order.status == T(com.app.TechSphere.model.Order.OrderStatus).APPROVED}">Approved</option>
+                                        <option value="SHIPPED" 
+                                                th:selected="${order.status == T(com.app.TechSphere.model.Order.OrderStatus).SHIPPED}">Shipped</option>
+                                        <option value="DELIVERED" 
+                                                th:selected="${order.status == T(com.app.TechSphere.model.Order.OrderStatus).DELIVERED}">Delivered</option>
+                                        <option value="CANCELLED" 
+                                                th:selected="${order.status == T(com.app.TechSphere.model.Order.OrderStatus).CANCELLED}">Cancelled</option>
+                                    </select>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
@@ -927,7 +1111,7 @@
                 <i class="fas fa-bolt"></i>
             </div>
             <div class="menu-items">
-                <a th:href="@{/admin/categories}" class="menu-item" title="Categories">
+                <a th:href="@{/admin/dashboard}" class="menu-item" title="Dashboard">
                     <i class="fas fa-tachometer-alt"></i>
                 </a>
                 <a th:href="@{/admin/users}" class="menu-item" title="Users">
@@ -938,6 +1122,9 @@
                 </a>
                 <a th:href="@{/admin/orders}" class="menu-item" title="Orders">
                     <i class="fas fa-receipt"></i>
+                </a>
+                <a th:href="@{/admin/categories}" class="menu-item" title="Categories">
+                    <i class="fas fa-tags"></i>
                 </a>
                 <form th:action="@{/logout}" method="post" style="display: inline;">
                     <button type="submit" class="menu-item" title="Logout" style="background: none; border: none; cursor: pointer;">
@@ -961,6 +1148,33 @@
         </div>
     </div>
 
+    <!-- Update Deposit Modal -->
+    <div id="depositModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Update Deposit</h2>
+                <span class="close-modal" onclick="closeDepositModal()">&times;</span>
+            </div>
+            <form id="depositForm" th:action="@{'/orders/admin/update-deposit'}" method="post">
+                <input type="hidden" name="orderId" id="depositOrderId">
+                <div style="margin-bottom: 20px;">
+                    <label style="color: var(--neon-cyan); display: block; margin-bottom: 10px;">Deposit Amount (Ush)</label>
+                    <input type="number" name="depositAmount" id="depositAmount" 
+                           class="deposit-input" style="width: 100%;" 
+                           placeholder="Enter deposit amount" required>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="action-btn update-btn" style="flex: 1;">
+                        <i class="fas fa-save"></i> Update Deposit
+                    </button>
+                    <button type="button" class="action-btn" onclick="closeDepositModal()" style="flex: 1;">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
@@ -978,7 +1192,6 @@
             const status = document.getElementById('statusFilter').value;
             const date = document.getElementById('dateFilter').value;
             
-            // Implement filtering logic here
             console.log('Filtering by:', { status, date });
             
             // You can make an AJAX call to fetch filtered orders
@@ -987,7 +1200,8 @@
                 .then(data => {
                     // Update table with filtered data
                     updateOrdersTable(data);
-                });
+                })
+                .catch(error => console.error('Error filtering orders:', error));
         }
 
         // Search orders
@@ -998,7 +1212,8 @@
                 .then(response => response.json())
                 .then(data => {
                     updateOrdersTable(data);
-                });
+                })
+                .catch(error => console.error('Error searching orders:', error));
         }
 
         // View order details
@@ -1007,6 +1222,13 @@
                 .then(response => response.json())
                 .then(order => {
                     const content = document.getElementById('orderDetailsContent');
+                    const itemsList = order.items.map(item => `
+                        <div class="order-item">
+                            <span>${item.product.name} x${item.quantity}</span>
+                            <span>Ush ${(item.product.price * item.quantity).toLocaleString()}</span>
+                        </div>
+                    `).join('');
+                    
                     content.innerHTML = `
                         <div class="order-detail-item">
                             <div class="detail-label">Order ID:</div>
@@ -1014,7 +1236,12 @@
                         </div>
                         <div class="order-detail-item">
                             <div class="detail-label">Customer:</div>
-                            <div class="detail-value">${order.user.name} (${order.user.email})</div>
+                            <div class="detail-value">
+                                <strong>${order.user.name}</strong><br>
+                                ${order.user.email}<br>
+                                <i class="fas fa-phone-alt" style="color: var(--cyber-green);"></i> ${order.user.phone || 'No phone'}<br>
+                                <i class="fas fa-map-marker-alt" style="color: var(--neon-purple);"></i> ${order.user.district || 'No location'}
+                            </div>
                         </div>
                         <div class="order-detail-item">
                             <div class="detail-label">Date:</div>
@@ -1027,31 +1254,73 @@
                             </div>
                         </div>
                         <div class="order-detail-item">
-                            <div class="detail-label">Items:</div>
+                            <div class="detail-label">Deposit:</div>
                             <div class="detail-value">
-                                <div class="items-list">
-                                    ${order.items.map(item => `
-                                        <div class="order-item">
-                                            <span>${item.product.name} x${item.quantity}</span>
-                                            <span>$${(item.product.price * item.quantity).toFixed(0)}</span>
-                                        </div>
-                                    `).join('')}
+                                <span class="deposit-amount">Ush ${order.depositAmount.toLocaleString()}</span>
+                                <span class="deposit-badge ${order.depositAmount >= order.totalAmount ? 'deposit-paid' : order.depositAmount > 0 ? 'deposit-partial' : 'deposit-pending'}">
+                                    ${order.depositAmount >= order.totalAmount ? 'Fully Paid' : order.depositAmount > 0 ? 'Partial Payment' : 'Pending Deposit'}
+                                </span>
+                                <div class="deposit-progress" style="width: 100%; margin-top: 5px;">
+                                    <div class="deposit-progress-bar" style="width: ${(order.depositAmount / order.totalAmount) * 100}%"></div>
                                 </div>
                             </div>
                         </div>
                         <div class="order-detail-item">
+                            <div class="detail-label">Items:</div>
+                            <div class="detail-value">
+                                <div class="items-list">
+                                    ${itemsList}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="order-detail-item">
+                            <div class="detail-label">Subtotal:</div>
+                            <div class="detail-value">Ush ${order.subtotal.toLocaleString()}</div>
+                        </div>
+                        <div class="order-detail-item">
+                            <div class="detail-label">Shipping:</div>
+                            <div class="detail-value">Ush ${order.shippingCost.toLocaleString()}</div>
+                        </div>
+                        <div class="order-detail-item">
                             <div class="detail-label">Total:</div>
                             <div class="detail-value" style="font-size: 1.3rem; color: var(--neon-cyan);">
-                                $${order.totalAmount.toFixed(0)}
+                                Ush ${order.totalAmount.toLocaleString()}
+                            </div>
+                        </div>
+                        <div class="deposit-section">
+                            <h3>Contact Customer</h3>
+                            <div style="display: flex; gap: 10px;">
+                                <a href="https://wa.me/${order.user.phone}?text=Hello ${order.user.name}, your order #${order.id} is currently ${order.status}. Total: Ush ${order.totalAmount.toLocaleString()}. Deposit paid: Ush ${order.depositAmount.toLocaleString()}. Please contact us for more information." 
+                                   target="_blank" 
+                                   class="action-btn whatsapp-btn" 
+                                   style="flex: 1; text-align: center;">
+                                    <i class="fab fa-whatsapp"></i> WhatsApp Customer
+                                </a>
+                                <button class="action-btn update-btn" style="flex: 1;" onclick="openDepositModal(${order.id}, ${order.depositAmount})">
+                                    <i class="fas fa-money-bill"></i> Update Deposit
+                                </button>
                             </div>
                         </div>
                     `;
                     
                     document.getElementById('orderModal').classList.add('show');
-                });
+                })
+                .catch(error => console.error('Error fetching order details:', error));
         }
 
-        // Close modal
+        // Open deposit modal
+        function openDepositModal(orderId, currentDeposit) {
+            document.getElementById('depositOrderId').value = orderId;
+            document.getElementById('depositAmount').value = currentDeposit;
+            document.getElementById('depositModal').classList.add('show');
+        }
+
+        // Close deposit modal
+        function closeDepositModal() {
+            document.getElementById('depositModal').classList.remove('show');
+        }
+
+        // Close main modal
         function closeModal() {
             document.getElementById('orderModal').classList.remove('show');
         }
@@ -1060,6 +1329,7 @@
         function updateOrdersTable(orders) {
             // Implementation depends on how you want to update the table
             // You can either replace the entire tbody or use a library like DataTables
+            console.log('Updating orders table with:', orders);
         }
 
         // Refresh data
@@ -1071,15 +1341,20 @@
                     document.querySelectorAll('.stat-value')[0].textContent = stats.totalOrders;
                     document.querySelectorAll('.stat-value')[1].textContent = stats.pendingCount;
                     document.querySelectorAll('.stat-value')[2].textContent = stats.shippedCount;
-                    document.querySelectorAll('.stat-value')[3].textContent = '$' + stats.totalRevenue;
-                });
+                    document.querySelectorAll('.stat-value')[3].textContent = 'Ush ' + stats.totalRevenue.toLocaleString();
+                })
+                .catch(error => console.error('Error refreshing data:', error));
         }
 
-        // Close modal when clicking outside
+        // Close modals when clicking outside
         window.onclick = function(event) {
-            const modal = document.getElementById('orderModal');
-            if (event.target == modal) {
+            const orderModal = document.getElementById('orderModal');
+            const depositModal = document.getElementById('depositModal');
+            if (event.target == orderModal) {
                 closeModal();
+            }
+            if (event.target == depositModal) {
+                closeDepositModal();
             }
         }
 
@@ -1102,9 +1377,10 @@
                 }
             }
             
-            // Escape key to close modal
+            // Escape key to close modals
             if (e.key === 'Escape') {
                 closeModal();
+                closeDepositModal();
             }
         });
     </script>

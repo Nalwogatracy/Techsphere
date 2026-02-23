@@ -27,6 +27,24 @@ public class User {
     private String password;
     private LocalDateTime createdAt; // or Date, LocalDate, etc.
     private boolean enabled = true;
+    private String phone;
+    private String district;
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
+    }
 
     public boolean isEnabled() {
         return enabled;
