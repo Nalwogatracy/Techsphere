@@ -1465,11 +1465,11 @@
                     </div>
 
                     <!-- Receipts/Proof of Payment List -->
-                    <div th:if="${not #lists.isEmpty(order.paymentProofs)}" class="receipts-list">
+                    <div th:if="${not #lists.isEmpty(order.paymentProof)}" class="receipts-list">
                         <h4 style="color: var(--neon-cyan); margin-bottom: 15px;">
                             <i class="fas fa-file-invoice"></i> Payment Receipts
                         </h4>
-                        <div th:each="proof : ${order.paymentProofs}" class="receipt-item">
+                        <div th:each="proof : ${order.paymentProof}" class="receipt-item">
                             <i class="fas fa-file-image"></i>
                             <div class="receipt-item-info">
                                 <div class="receipt-item-date" th:text="${#temporals.format(proof.uploadedAt, 'MMM dd, yyyy HH:mm')}">Jan 15, 2024 14:30</div>
